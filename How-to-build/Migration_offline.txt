@@ -1,0 +1,49 @@
+Content-Type: text/x-zim-wiki
+Wiki-Format: zim 0.6
+Creation-Date: 2025-07-20T23:28:59+02:00
+
+====== Migration offline ======
+Créée le dimanche 20 juillet 2025
+
+===== Objectif : =====
+* Se débarasser de tout besoin de synchronisation de fichiers. Ne garder que les mails google et live.
+* Se débarasser de tout besoin de prise de notes en ligne
+* Se débarasser de tout besoin d'infrastructure tierce (ou du moins, limiter au max ... authenticator, services google non essentiells, etc...)
+
+[*] 21/07/2025 : ok onedrive et dropbox sont vides (sauf une sharebox dans google drive si il faut emmener des fichiers au travail, ou utilisation type clé usb).
+
+===== Solutions : =====
+	[*] trouver une sauvegarde perenne des dossier précieuses voir plus bas).
+	[*] rapatrier les fichiers online et les mettre dans une "dropbox" locale : ok, intégré dans le dossier "1 Sandbox" (et réorganisé d'après l'arborescence de ChatGPT)
+	[*] trouver une solution d'échange de fichiers temporaires entre ordis (et pour emmener au travai pour imprimer par exemple) -> faire un dossier dans google drive juste pur ca. Mais ne pas se servir de ces services pour faire de la synchro entre pc.
+	[*] trouver une solution de synchronisation des login et mots de passe ( fonction tres pratque et utilisée très souvent ) : Firefox permet de synchroniser les mots de passe, marques pages, onglet. Disponible sur toutes les plateformes fixes et mobiles. OK, installé sur téléphone et PC. La synchronisation onglet favoris et mots de passe se fait bien
+	[*] Pas besoin de synchroniser le fichier keepass (M8-k9) : sur les autres machine, le portefeuille Firefox suffit largement
+	[*] Utiliser ZIM à la place de OneNote
+	[*] Utiliser une image disque ext4 LUKS au lieu d'une image veracrypt : ok ( (M8-k9) )
+	[*] Rapatrier OneNote dans Zim ( en cours, restent des blocs notes ... beaucoup de pages.)
+	[*] Rapatrier Note Keep dans Zim -> convertion des html exportés en .txt en ajoutant l'entete-type de Zim
+	[*] A l'avenir utliser un brouillon gmail pour noter sur le telephone
+
+
+
+===== Concernant la sauvegarde : =====
+Le principe est d'avoir le minimum de données de valeur personnelle ou administrative dans le pc portable. Uniquement des fichiers geekeries, projet de loisir ou travaux, recettes, etc ....
+
+[*] pc portable : quelques fichiers, la plupart voués à être travaillés le temps d'un projet et de la documentation d'utilisation de l'ordinateur et generale (kiwix)
+[*] un SSD 500Go formaté en etx4 et nommé Source : tout mes fichiers.
+[*] un SSD 250Go formaté en NTFS et nommé Backup 1 : un  miroir de Source
+[*] un SSD 1000Go formaté en NTFS et nommé Backup 2 : un autre miroir de Source (et également, emplacement de sauvegarde des archives inutilisées comme RHD, etc ...)
+[*] aucune données sur les ordinateurs windows. il n'y a que des jeux sur les ordinateurs Windows.
+[*] aucune disque partagé sur la box. Sauf peut etre une petite clé usb pour faire une boite d'echange...et encore
+
+[*] A voir s'il y a des données sur le PC Lenovo tour. Si oui, mettre à jour le partage box et supprimer tout fichier perso du pc de jeu.
+
+Pour dupliquer Sources vers les backup : rsync -hvrt --progress --delete "/media/benoit/Source/Benoit/" "/media/benoit/Backup 2/Benoit"
+(il y a un script dans le dossier des scirpts)
+
+-> non, utiliser le script de ChatGPT mixé avec l'ancien script backup que j'avais fait auparavant
+
+
+
+	
+	

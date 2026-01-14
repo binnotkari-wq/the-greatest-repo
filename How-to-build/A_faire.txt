@@ -1,0 +1,76 @@
+Content-Type: text/x-zim-wiki
+Wiki-Format: zim 0.6
+Creation-Date: 2025-07-19T23:17:53+02:00
+
+====== A faire ======
+
+
+" Installation des .run
+
+
+
+NON mieux vaut faire l'install manuellement. Le nom de l'installeur le plus à jour change au fil des versions.
+# QCAD (installation en user, dossier autonome pas de dépendances.)
+cd ./$HOME/Téléchargements
+wget https://qcad.org/archives/qcad/qcad-3.32.3-trial-linux-x86_64.run
+chmod +x qcad-3.32.3-trial-linux-x86_64.run
+./qcad-3.32.3-trial-linux-x86_64.run
+# il s'installera tout seul dans ./$HOME/opt/ . Pour supprimer la version trial pro et passer sur version free (comme expliqué dans la fenetre A propos dans Qcad:
+rm libqcaddwg.so libqcadpdf.so libqcadpolygon.so libqcadproj.so libqcadproscripts.so libqcadproxies.so libqcadshp.so libqcadspatialindexpro.so libqcadtrace.so libqcadtriangulation.so
+
+
+
+
+Post install#installation des AppImages
+
+
+Scripts à finir
+
+# Hardware probe
+wget https://github.com/linuxhw/hw-probe/releases/download/1.6/hw-probe-1.6.5-189-x86_64.AppImage
+sudo ./hw-probe-1.6.5-189-x86_64.AppImage -all -upload
+
+
+# Return to Castle Wolfenstein
+# il faudra créer manuellement le raccourci : pour ça, utiliser le fichier $HOME/Sources offgrid/Utilisation du système/Post install/creer_rtcw_desktop.sh
+
+
+
+--------------------
+
+===== NE PAS INSTALLER =====
+== = ==
+- Zulucrypt : pour gérer les volumes chiffrés veracrypt (zulucrypt-gui zulucrypt-cli non, car utilisent qt)
+- Kicad : plan de circuits électroniques (pas en GTK, installe des dépendances wxgtk. De plus, après test, trop complexe)
+- Kodi et ses dépendances utilisent 180 Mo; Pas de Qt. Mais ce n'est pas léger...
+- Formiko (lecteur / editeur markdown) : ne prend pas en charge les tableau et autres formats avancés dans le markdown
+- Des cartes hors ligne : pas evident, softs abandonnés, ou en qt sans appimage ...
+- Epiphany à la place de Firefox : semble lent, sature la memoire...a tester hors de la VM.
+- Plateforme Flatpak : uniquement si on ne peut pas faire autrement qu'un flatpak. Installer en faisant un script avec les commandes indiquées sur e site flatpak (permet d'installer un flatpak). Mais ca consomme énormément de données.
+- Pinta (n'est pas sur le DVD, trouver une alternative)
+- VLC : fonctionne en QT5 dont non
+- gnome-dictionary (interface) et dictd (base de donnée) (ca deconne ... dict en ligne de commande est ok mais gnome dictionnary plante lorsuqu'on utilise un source localhost)
+- Gdebi : pour installer un paquet .deb avec une interface graphique et resolution des dépendances TROP DE DEPENDANCES
+- Grsync : interface GTK pour rsync : NON il vaut mieux faire à la main, plus de sécurité
+- Marble : comme google earth .... mais trop buggé
+- BDNF : création de bande dessinée ... mais pas vraiment d'interet ni pour moi ni pour sofia
+
+
+NON prendre le zim de wikitionnaire ...
+~~# goldendict en appimage + dictionnaires dispos ici : https://github.com/kzelda/MyGoldenDict/tree/master/Dicos~~
+~~mkdir $HOME/opt/Goldendict~~
+~~cd $HOME/opt/Goldendict~~
+~~wget https://github.com/Abs62/goldendict/releases/download/continuous/GoldenDict-661dd4d-x86_64.AppImage~~
+~~chmod +x GoldenDict-661dd4d-x86_64.AppImage~~
+~~wget https://github.com/goldendict/goldendict/blob/master/icons/programicon.png?raw=true~~
+~~mv programicon.png?raw=true programicon.png~~
+~~# il faudra créer manuellement le raccourci : pour ça, utiliser le fichier $HOME/Sources offgrid/Utilisation du système/Post install/creer_goldendict_desktop.sh~~
+
+
+
+- pas besoin de veracrypt d'ailleurs. Utiliser plutot une image disque ext4 avec LUKS
+# Veracrypt pour les conteneurs  de fichiers sécurisés
+# mkdir $HOME/opt/Veracrypt
+# cd $HOME/opt/Veracrypt
+# wget https://launchpad.net/veracrypt/trunk/1.26.24/+download/VeraCrypt-1.26.24-x86_64.AppImage
+# chmod +x [[https://launchpad.net/veracrypt/trunk/1.26.24/+download/VeraCrypt-1.26.24-x86_64.AppImage|VeraCrypt-1.26.24-x86_64.AppImage]]

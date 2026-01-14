@@ -1,0 +1,23 @@
+Content-Type: text/x-zim-wiki
+Wiki-Format: zim 0.6
+Creation-Date: 2025-09-29T11:22:03+02:00
+
+====== Steam Deck ======
+Créée le lundi 29 septembre 2025
+
+Format de la carte SD
+ext4 -> on ne peut donc pas utiliser pour tranferer depuis un pc windows
+Pas possible de connecter avec un cable usb pour faire OTG
+Donc les transferts doivent se faire avec une clé usb, un disque dur ... formaté en exfat
+
+
+
+Heroic Game Launcher (en deb, tres peu de dependances)
+Prend nativement en charge Amazon Prime Gaming, GOG, et EPIC. Gere tout seul la mise en place et le paramétrage de proton / wine
+On peut installer Ubisoft Connect dans Heroic, et le lancer comme un jeu. Une fois lancé, on peut installer les jeux. Idem EA App.
+
+
+Hydra Launcher : en appimage. Parfait pour intégrer des jeux private, avec en plus le catalogue de téléchargements. A tester pour voir comment est pris en charge wine / proton : on dirait qu'il n'y a pas de préréglage; Peut etre qu'il vaut mieux insérer les jeux téléchargés dans Heroic.
+Les .json de catalogues sont ici : https://github.com/ArnamentGames/HydraLinks
+Un autre bon point de départ : https://library.hydra.wiki/library
+https://galinhaman.github.io/Hydra-Guide/en/download-sources.html

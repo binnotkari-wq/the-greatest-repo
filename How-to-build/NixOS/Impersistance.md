@@ -32,6 +32,8 @@ environment.etc."machine-id".text = "b736...ton_id_unique_ici";
 
 
 
+Non : périmé, voir commentaire dans la fiche Impersistance maximale
+
 ### L'heure système (adjtime)
 
 Celui-ci est un peu particulier. Il sert à compenser la dérive de l'horloge matérielle (BIOS). Si tu utilises la synchronisation réseau (NTP), ce qui est le cas par défaut sur KDE :

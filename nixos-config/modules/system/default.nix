@@ -4,7 +4,14 @@
   # --- ID MACHINE --- la déclaration de cette valeur permet d'avoir /etc/machine-id
   # qui se génère tout seul au démarrage (impermanence). Valeur à récupérer avant de
   # lancer l'installation de NIXOS avec la commande : dbus-uuidgen
-  environment.etc."machine-id".text = "9bdbb07d2b2d1f91b29afc3169657034";
+  # environment.etc."machine-id".text = "9bdbb07d2b2d1f91b29afc3169657034";
+  # NON vu avec Gemini, certains service peuvent en avoir besoin très tôt lors du démarrage.
+  # Mieux vaut le persister.
+
+  # --- ACTIVATION ZRAM --- pour supporter le root en RAM
+  zramSwap.enable = true;
+  zramSwap.memoryPercent = 30; # Utilise jusqu'à 30% de tes 12Go si besoin
+
 
   # --- RÉSEAU ---
   networking.hostName = "dell_5485";

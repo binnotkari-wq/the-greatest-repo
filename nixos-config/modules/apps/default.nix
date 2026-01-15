@@ -8,17 +8,10 @@
   # Logiciels à installer
   environment.systemPackages = with pkgs; [
     # Logiciels en CLI
-    fastfetch
     wget
     git
-    duf
-    mc
-    lynx
     pandoc
-    btop
-    nvtopPackages.amd
     pkgs.llama-cpp-vulkan
-    pkgs.python3Minimal
 
     # Utilitaires officiels KDE
     kdePackages.filelight

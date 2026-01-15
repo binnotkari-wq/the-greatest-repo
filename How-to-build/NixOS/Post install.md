@@ -77,7 +77,7 @@ git config --global user.name "binnotkari-wq"
 Ajoute l'adresse de ton dépôt GitHub
 git remote add origin https://github.com/binnotkari-wq/nixos-config.git
 
-# Renomme la branche principale en 'main' (standard moderne)
+Renomme la branche principale en 'main' (standard moderne)
 git branch -M main
 
 git add .

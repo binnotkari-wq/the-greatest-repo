@@ -28,7 +28,7 @@
           home-manager.useUserPackages = true;
           # On passe les inputs à home.nix au cas où tu en aies besoin plus tard
           home-manager.extraSpecialArgs = { inherit inputs; };
-          home-manager.users.benoit = import ./users/home.nix;
+          home-manager.users.benoit = import ./modules/users/home.nix;
         }
       ];
     };

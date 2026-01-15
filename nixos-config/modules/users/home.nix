@@ -29,9 +29,9 @@
   # Gestions détaillée des logiciels et de leurs préférences utilisateur
   programs.git = {
     enable = true;
-    userName = "binnotkari-wq";
-    userEmail = "benoit.dorczynski@gmail.com";
-    extraConfig = {
+    settings.user.name = "binnotkari-wq";
+    settings.user.email = "benoit.dorczynski@gmail.com";
+    settings = {
       init.defaultBranch = "main";
       core.editor = "nano";      # Ou ton éditeur préféré
     };
@@ -47,14 +47,30 @@
   };
 
 
-  # Si tu utilises Bash (par défaut sur NixOS), tu peux gérer ton .bashrc ici
+  # Tu peux gérer ton .bashrc ici
   programs.bash = {
     enable = true;
+
+    # Tes alias (on garde ceux qu'on a vu avant)
     shellAliases = {
       ll = "ls -l";
-      update = "sudo nixos-rebuild switch --flake .#dell5485";
+      update = "sudo nixos-rebuild switch --flake .#dell_5485";
       garbage = "nix-collect-garbage -d";
     };
+
+    # Pour ton export FLATPAK
+    sessionVariables = {
+      FLATPAK_DOWNLOAD_TMPDIR = "$HOME/.flatpak-tmp";
+      HISTTIMEFORMAT = "%d/%m/%y %T ";
+    };
+
+    # Pour ton script de gestion d'historique
+    bashrcExtra = ''
+      if [[ $SHLVL -eq 1 ]]; then
+        history -s "# SESSION $(date +%s) $$"
+        history -a
+      fi
+    '';
   };
 
   # --- GESTION DES FICHIERS (Optionnel) ---

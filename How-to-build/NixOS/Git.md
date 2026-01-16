@@ -5,8 +5,7 @@ Dans github, créer un repository, le nommer, et noter son adresse.
 Sur le PC, aller dans le répertoire qui servira de dépot.
 
 ```bash
-git config --global user.email "benoit.dorczynski@gmail.com"
-git config --global user.name "binnotkari-wq"
+cd 
 git init
 git add .
 git commit -m "Initialisation dépot"
@@ -33,14 +32,22 @@ Et les synchronisations suivantes se feront toujours avec
 git init
 git add .
 git commit -m "descriptif du commit"
+git pull origin main
 git push -u origin main
 ```
 
+Ou, plus efficace en un seul copié-collé : 
+```bash
+- cd ~/Mes-Donnees/Git/ && git init && git add . && git commit -m "description du commit" && git pull origin main && git push origin main # synchroniser le depot git des .nix
+```
 
-Si demandé :
+
+Si demandé
     - Username : binnotkari-wq
     - Password : Colle ici le Token que tu viens de copier. (Note : Rien ne s'affichera quand tu colles, c'est normal pour la sécurité. Colle et appuie sur Entrée).
 
 
 Token de github :
+```bash
 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
+```

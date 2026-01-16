@@ -2,18 +2,18 @@
 
 Système installé directement avec flakes, sur la base des fichiers de config préétablis.
 
+Script bootstrap.sh à compléter / vérifier avec ces commandes.
 
 ```bash
-btrfs subvolume create /mnt/@
 sudo mount /dev/nvme0n1p3 /mnt
-sudo btrfs subvolume create /mnt/@
+sudo btrfs subvolume create /mnt/@ # inutile en cas de tmpfs
 sudo btrfs subvolume create /mnt/@home # A voir avec Gemini, si on a déjà une partition btrfs, et qu'on veut conserver home, il faurdait dans ce cas juste créer les sousvolumes dont on a besoin, supprimer ceux qui sont inutiles. On vidrait le contenu de tous les sousvolumes existants sauf home. A détailler avec Gemini.
 sudo btrfs subvolume create /mnt/@nix
 sudo btrfs subvolume create /mnt/@var # pas besoin si on fait un tmpfs sur / avec persistence selective (voir fiche Impersistance maximale)
 sudo umount /mnt
 export OPTS="noatime,compress=zstd,ssd,discard=async"
 sudo mount -o subvol=@,$OPTS /dev/nvme0n1p3 /mnt
-sudo mkdir -p /mnt/{home,nix,var,boot}
+sudo mkdir -p /mnt/{home,nix,var #inutile en impersistance maxiale,boot}
 sudo mount -o subvol=@home,$OPTS /dev/nvme0n1p3 /mnt/home
 sudo mount -o subvol=@nix,$OPTS /dev/nvme0n1p3 /mnt/nix
 sudo mount -o subvol=@var,$OPTS /dev/nvme0n1p3 /mnt/var # pas besoin si on fait un tmpfs sur / avec persistence selective (voir fiche Impersistance maximale)

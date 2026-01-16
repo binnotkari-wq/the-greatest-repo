@@ -12,9 +12,9 @@
 
   # Les paquets que tu installais avant via nix profile
   home.packages = with pkgs; [
-    bat
+    # bat
     fzf
-    ripgrep
+    # ripgrep
     duf
     mc
     lynx
@@ -23,6 +23,7 @@
     nvtopPackages.amd
     pkgs.radeontop
     fastfetch
+    compsize
     # tes autres outils...
   ];
 
@@ -51,6 +52,14 @@
   programs.bash = {
     enable = true;
 
+    # Ton message de bienvenue
+    interactiveShellInit = ''
+      echo "=========================================="
+      echo "   Bienvenue sur NixOS (Dell 5485)        "
+      echo "=========================================="
+    '';
+
+
     # Tes alias (on garde ceux qu'on a vu avant)
     shellAliases = {
       ll = "ls -l";
@@ -58,7 +67,7 @@
       garbage = "nix-collect-garbage -d";
     };
 
-    # Pour ton export FLATPAK
+    # Variables de session
     sessionVariables = {
       FLATPAK_DOWNLOAD_TMPDIR = "$HOME/.flatpak-tmp";
       HISTTIMEFORMAT = "%d/%m/%y %T ";

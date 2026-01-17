@@ -2,7 +2,7 @@ Commandes usuelles
 ==================
 
 === Installer un logiciel ===
-- nix-shell -p nomdulogiciel # le logiciel est isolé, il ne fera partie d'aucune génération. Ne sera plus présent au prochain reboot
+- nix shell nixpkgs#nomdulogiciel # le logiciel est isolé, il ne fera partie d'aucune génération. Ne sera plus présent au prochain reboot
 - flatpak install --user flathub nomdulogiciel # le flatpak sera installé dans le repo flatpak userspace, depuis flathub
 
 === Supprimer les vieilles générations et nettoyer ===
@@ -20,7 +20,7 @@ Commandes usuelles
 - sudo nixos-rebuild switch --flake .#dell_5485 # rebuild et bascule en live sur la nouvelle génération, et génère une nouvelle entrée de boot
 
 === outils de monitoring ===
-- duf - fastfetch - radeontop - btop - nvtop - compsize
+- duf - fastfetch - radeontop - btop - nvtop - powertop - compsize
 - sudo compsize /nix # analyser la compression btrfs du sous-volume @nix
 
 

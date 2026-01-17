@@ -4,27 +4,24 @@
   # Information de base sur l'utilisateur
   home.username = "benoit";
   home.homeDirectory = "/home/benoit";
-
   home.stateVersion = "25.11"; # Garder la version d'installation initiale
 
-  # Activation de Home Manager lui-même
+  # Activation de Home Manager
   programs.home-manager.enable = true;
 
-  # Les paquets que tu installais avant via nix profile
+  # List packages installed for user only
   home.packages = with pkgs; [
-    # bat
     fzf
-    # ripgrep
     duf
     mc
     lynx
     btop
     htop
+    powertop
     nvtopPackages.amd
     radeontop
     fastfetch
     compsize
-    # tes autres outils...
   ];
 
   # Configuration de Git
@@ -73,15 +70,10 @@
       echo -e "- \e[33msudo nixos-rebuild switch --flake .#dell_5485\e[0m # rebuild et bascule en live sur la nouvelle génération, et génère une nouvelle entrée de boot"
       echo
       echo -e "\e[36m=== outils de monitoring ======================================\e[0m"
-      echo -e "- \e[33mduf - fastfetch - radeontop - btop - nvtop - compsize\e[0m"
+      echo -e "- \e[33mduf - fastfetch - radeontop - btop - nvtop - powertp - compsize\e[0m"
       echo -e "- \e[33msudo compsize /nix\e[0m # analyser la compression btrfs du sous-volume @nix"
     '';
-    # des exmeples d'alias
-    shellAliases = {
-      # ll = "ls -l";
-      # update = "sudo nixos-rebuild switch --flake .#dell_5485";
-      # garbage = "nix-collect-garbage -d";
-    };
+
     # Variables de session
     sessionVariables = {
       FLATPAK_DOWNLOAD_TMPDIR = "$HOME/.flatpak-tmp";
@@ -95,10 +87,4 @@
       fi
     '';
   };
-
-  # --- GESTION DES FICHIERS (Optionnel) ---
-  # Home Manager peut aussi copier des fichiers directement dans ton Home.
-  # home.file.".config/mon-logiciel/config.conf".text = ''
-  #   parametre = valeur
-  # '';
 }

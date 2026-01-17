@@ -1,36 +1,42 @@
 {
-  description = "Quotidien et Gaming";
+  description = "Configuration NixOS multi-machines de Benoit";
 
   inputs = {
-    # Note : En janvier 2026, nixos-25.11 est la version stable actuelle.
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-25.11";
-    impermanence.url = "github:nix-community/impermanence";
-
-    home-manager = {
-      url = "github:nix-community/home-manager/release-25.11"; # Utilise la branche matching nixpkgs
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+    # Ajoute ici tes autres inputs si nécessaire (home-manager, etc.)
   };
 
-  # Ajout de la virgule avant les points de suspension
-  outputs = { self, nixpkgs, impermanence, home-manager, ... }@inputs: {
-    # Attention au nom de l'hôte : dell_5485 (doit correspondre à ton hostname)
-    nixosConfigurations.dell_5485 = nixpkgs.lib.nixosSystem {
-      specialArgs = { inherit inputs; };
-      modules = [
-        ./configuration.nix # Ce fichier doit importer ./users.nix
+  outputs = { self, nixpkgs, ... }@inputs: {
+    nixosConfigurations = {
+      # C'est ici que tu définis le nom utilisé dans ton script (FLAKE_NAME)
+      dell_5485 = nixpkgs.lib.nixosSystem {
+        specialArgs = { inherit inputs; };
+        modules = [
+          # 1. Le matériel (écrasé par le script bootstrap)
+          ./hosts/dell_5485/hardware-configuration.nix
 
-        impermanence.nixosModules.impermanence
+          # 2. Tes modules de configuration (déportés)
+          ./modules/file_systems.nix
+          ./modules/system.nix
+          ./modules/boot.nix
+          ./modules/persistence.nix
+          ./modules/users.nix
+          ./modules/apps.nix
+          ./modules/TDP.nix
+          ./modules/gaming.nix
 
-        home-manager.nixosModules.home-manager
-        {
-          home-manager.useGlobalPkgs = true;
-          home-manager.useUserPackages = true;
-          # On passe les inputs à home.nix au cas où tu en aies besoin plus tard
-          home-manager.extraSpecialArgs = { inherit inputs; };
-          home-manager.users.benoit = import ./modules/users/home.nix;
-        }
-      ];
+          # 3. Paramètres qui étaient dans configuration.nix
+          {
+            system.stateVersion = "25.11";
+
+            # Optionnel : forcer le hostname pour qu'il corresponde au nom de la config
+            networking.hostName = "dell_5485";
+          }
+        ];
+      };
+
+      # Si tu installes une AUTRE machine, tu pourras copier-coller
+      # ce bloc ici avec un autre nom (ex: "nouveau_pc")
     };
   };
 }

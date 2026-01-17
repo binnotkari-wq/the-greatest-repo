@@ -12,6 +12,7 @@
       ./modules/system/boot.nix
       ./modules/system/persistence.nix
       ./modules/system/environment.nix
+      ./modules/system/TDP.nix
       ./modules/apps/default.nix
       ./modules/gaming/default.nix
       ./modules/users/benoit.nix

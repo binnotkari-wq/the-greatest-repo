@@ -9,7 +9,7 @@ FLAKE_NAME="dell_5485"
 TARGET="/mnt"
 
 echo "⚠️ ATTENTION : Tout le contenu de $DISK va être effacé !"
-# sleep 5 # Optionnel : petite pause pour réfléchir
+sleep 5 # petite pause pour réfléchir
 
 # 1. PARTITIONNEMENT (GPT)
 echo "🏗️ Création de la table de partition GPT..."

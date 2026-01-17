@@ -22,3 +22,8 @@ Commandes usuelles
 === outils de monitoring ===
 - duf - fastfetch - radeontop - btop - nvtop - compsize
 - sudo compsize /nix # analyser la compression btrfs du sous-volume @nix
+
+
+
+sudo ryzenadj --stapm-limit=15000 --fast-limit=15000 --slow-limit=15000 # TDP : 15W
+sudo ryzenadj --stapm-limit=25000 --fast-limit=25000 --slow-limit=25000 # TDP par défaut du 3500U : 25W

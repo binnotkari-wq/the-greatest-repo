@@ -14,7 +14,7 @@ DEFAULT_USER="benoit"
 read -p "Nom d'utilisateur [$DEFAULT_USER] : " USER_NAME
 USER_NAME=${USER_NAME:-$DEFAULT_USER}
 
-# 3. Choix du nom de la configuration (Flake)
+# 3. Choix du nom de la machine (miniscules_sans_espaces)
 DEFAULT_FLAKE="dell_5485"
 read -p "Nom de la config dans le flake [$DEFAULT_FLAKE] : " FLAKE_NAME
 FLAKE_NAME=${FLAKE_NAME:-$DEFAULT_FLAKE}

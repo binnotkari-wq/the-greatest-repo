@@ -65,9 +65,9 @@
       echo -e '- \e[33mcd ~/Mes-Donnees/Git/ && git init && git add . && git commit -m "description du commit" && git pull origin main && git push origin main\e[0m # synchroniser le depot git des .nix'
       echo
       echo -e "\e[36m=== Rebuild (à executer dans ~/Mes-Donnees/Git/nixos-config)===\e[0m"
-      echo -e "- \e[33msudo nixos-rebuild test --flake .#dell_5485\e[0m # rebuild simple d'une nouvelle génération"
-      echo -e "- \e[33msudo nixos-rebuild boot --flake .#dell_5485\e[0m # générer une nouvelle entrée de boot, suite au rebuild test"
-      echo -e "- \e[33msudo nixos-rebuild switch --flake .#dell_5485\e[0m # rebuild et bascule en live sur la nouvelle génération, et génère une nouvelle entrée de boot"
+      echo -e "- \e[33msudo nixos-rebuild test --flake .#dell-5485\e[0m # rebuild simple d'une nouvelle génération"
+      echo -e "- \e[33msudo nixos-rebuild boot --flake .#dell-5485\e[0m # générer une nouvelle entrée de boot, suite au rebuild test"
+      echo -e "- \e[33msudo nixos-rebuild switch --flake .#dell-5485\e[0m # rebuild et bascule en live sur la nouvelle génération, et génère une nouvelle entrée de boot"
       echo
       echo -e "\e[36m=== outils de monitoring ======================================\e[0m"
       echo -e "- \e[33mduf - fastfetch - radeontop - btop - nvtop - powertp - compsize\e[0m"

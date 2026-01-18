@@ -1,20 +1,17 @@
 { pkgs, ... }:
 
 {
-  # 1. On active Steam et SA session Gamescope intégrée
-  # programs.steam = {
-    # enable = true;
-    # gamescopeSession.enable = true;
-  # };
+  1. On active Steam et SA session Gamescope intégrée
+  programs.steam = {
+    enable = true;
+    gamescopeSession.enable = true;
+  };
 
-  # 2. On active GameMode (toujours utile)
-  # programs.gamemode.enable = true;
+  2. On active GameMode (toujours utile)
+  programs.gamemode.enable = true;
 
-  # 3. On ajoute juste MangoHud pour les stats en jeu
-  # environment.systemPackages = with pkgs; [
-    # mangohud
-  # ];
-
-  # NOTE : On a TOUT supprimé (le script, le wrapper manuel, le sessionPackage)
-  # NixOS va générer lui-même une session nommée "Steam Big Picture" ou "gamescope"
+  3. On ajoute juste MangoHud pour les stats en jeu
+  environment.systemPackages = with pkgs; [
+    mangohud
+  ];
 }

@@ -6,7 +6,6 @@
   zramSwap.memoryPercent = 30; # Utilise jusqu'à 30% de tes 12Go si besoin
 
   # --- RÉSEAU ---
-  networking.hostName = "dell_5485";
   networking.networkmanager.enable = true;
   time.timeZone = "Europe/Paris";
 

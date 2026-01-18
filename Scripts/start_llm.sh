@@ -10,8 +10,9 @@ fi
 
 # 2. Demander à l'utilisateur quel modèle utiliser (Menu KDE)
 CHOIX=$(kdialog --menu "Quel modèle souhaites-tu réveiller ?" \
-    "G" "Gemma 3 1B (Rapide / 6 t/s)" \
-    "L" "Llama 3.2 3B (Intelligent / 3 t/s)")
+    "G" "Gemma 3 1B (Rapide)" \
+    "L" "Llama 3.2 3B (Intelligent)") \
+    "Q" "Qwen 2.5 Coder 3B (Intelligent)")
 
 # Vérifier si l'utilisateur a annulé
 if [ $? -ne 0 ]; then
@@ -22,9 +23,12 @@ fi
 if [ "$CHOIX" == "G" ]; then
     MODEL_PATH="$HOME/LLM/Modèles/gemma-3-1b-it-Q4_K_M.gguf"
     MODEL_NAME="Gemma 3 1B"
-else
+elif [ "$CHOIX" == "L" ]; then
     MODEL_PATH="$HOME/LLM/Modèles/Llama-3.2-3B-Instruct-Q4_K_M.gguf"
     MODEL_NAME="Llama 3.2 3B"
+else
+    MODEL_PATH="$HOME/LLM/Modèles/Qwen2.5-Coder-3B-Instruct-abliterated-Q4_K_M.gguf"
+    MODEL_NAME="Qwen 2.5 Coder 3B"
 fi
 
 # 4. Lancement du serveur

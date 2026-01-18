@@ -15,7 +15,7 @@
   outputs = { self, nixpkgs, impermanence, home-manager, ... }@inputs: {
     nixosConfigurations = {
       # C'est ici que tu définis le nom utilisé dans ton script (FLAKE_NAME)
-      dell_5485 = nixpkgs.lib.nixosSystem {
+      dell-5485 = nixpkgs.lib.nixosSystem {
         specialArgs = { inherit inputs; };
         modules = [
           # 1. Activation des modules externes
@@ -23,7 +23,7 @@
           home-manager.nixosModules.home-manager
 
           # 2. Le matériel (généré par bootstrap.sh))
-          ./hosts/dell_5485/hardware-configuration.nix
+          ./hosts/dell-5485/hardware-configuration.nix
 
           # 3. Tes modules de configuration (déportés)
           ./modules/file_systems.nix
@@ -33,12 +33,12 @@
           ./modules/users.nix
           ./modules/apps.nix
           ./modules/TDP.nix
-          ./modules/gaming.nix
+          # ./modules/gaming.nix
 
           # 4. Configuration directe (anciennement configuration.nix)
           {
             system.stateVersion = "25.11";
-            networking.hostName = "dell_5485";
+            networking.hostName = "dell-5485";
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
             home-manager.extraSpecialArgs = { inherit inputs; };

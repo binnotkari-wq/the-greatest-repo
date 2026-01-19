@@ -11,6 +11,7 @@
     "9p"
     "9pnet_virtio"
   ];
+
   boot.initrd.kernelModules = [
     "virtio_balloon"
     "virtio_console"
@@ -25,24 +26,22 @@
   # Ou si tu utilises les "guest additions" génériques
   virtualisation.spiceVDAgent.enable = true;
 
-
   # Accélération vidéo VirtIO (essentiel pour la fluidité de l'interface)
   services.xserver.videoDrivers = [ "virtio" ];
 
-
   # Montage automatique de dossiers partagés (exemple QEMU/9P)
   # Avec 9P
-  # fileSystems."/mnt/shared" = {
-    # fsType = "9p";
-    # device = "sharename";
-    # options = [ "trans=virtio" "version=9p2000.L" ];
+  fileSystems."/mnt/shared" = {
+    fsType = "9p";
+    device = "partage";
+    options = [ "trans=virtio" "version=9p2000.L" ];
   };
 
-  # Avec virtio (plus performant)
-  fileSystems."/mnt/shared" = {
-    device = "partage"; # Le nom (tag) défini dans Virt-Manager
-    fsType = "virtiofs";
-  };
+  # Avec virtio (plus performant mais necessite un module sur l'hôte)
+  # fileSystems."/mnt/shared" = {
+    # device = "partage"; # Le nom (tag) défini dans Virt-Manager
+    # fsType = "virtiofs";
+  # };
 
 }
 

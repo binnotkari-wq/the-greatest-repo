@@ -40,7 +40,7 @@
 
   # Avec virtio (plus performant)
   fileSystems."/mnt/shared" = {
-    device = "sharename"; # Le nom (tag) défini dans Virt-Manager
+    device = "partage"; # Le nom (tag) défini dans Virt-Manager
     fsType = "virtiofs";
   };
 

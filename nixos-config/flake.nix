@@ -82,7 +82,7 @@
       };
 
 
-            # --- CONFIGURATION 2 : Ryzen 5 3600 ---
+            # --- CONFIGURATION 3 : machine virtuelle ---
       "vm" = nixpkgs.lib.nixosSystem {
         specialArgs = { inherit inputs; };
         modules = [

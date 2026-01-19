@@ -4,12 +4,6 @@
 
 {
   environment.systemPackages = with pkgs; [
-    # Logiciels en CLI
-    wget
-    git
-    pandoc
-    pkgs.llama-cpp-vulkan
-
     # Utilitaires officiels KDE
     kdePackages.filelight
     pkgs.kdePackages.kdialog
@@ -19,7 +13,6 @@
 
   #Logiciels à supprimer du lot de base de KDE
   environment.plasma6.excludePackages = with pkgs; [
-    kdePackages.kate
     kdePackages.discover
   ];
 }

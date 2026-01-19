@@ -1,6 +1,7 @@
 { pkgs, ... }:
 
 {
+
   # Information de base sur l'utilisateur
   home.username = "benoit";
   home.homeDirectory = "/home/benoit";
@@ -22,6 +23,29 @@
     radeontop
     fastfetch
     compsize
+    pkgs.llama-cpp-vulkan
+    wget
+    pandoc
+    firefox # natif car pour une meilleure intégration système (KDE Connect, gestion des mots de passe, accélération matérielle). Le Flatpak peut parfois briser le sandboxing interne de Firefox.
+    kiwix
+    qownnotes
+    skanpage
+    kolourpaint
+    kompare
+    kcalc
+    librecad
+    haruna
+    kate
+    keepassxc
+    # krita
+    kstars
+    ktorrent
+    marble
+    # org.virt_manager.virt_manager.Extension.Qemu org.virt_manager.virt-manager
+    # kdenlive
+    # steam # Très bien maintenu par l'équipe NixOS. Meilleures performances avec Gamescope/MangoHud que vous utilisez. Installez Steam via programs.steam.enable = true (pour profiter de votre config Gamescope). Système (systemPackages), car ils ont besoin de parler très intimement au noyau (Kernel) et aux pilotes graphiques.
+    # heroic # C'est l'un des rares cas où le Flatpak est souvent recommandé par la communauté NixOS. Comme Heroic gère des jeux provenant de magasins qui ne supportent pas Linux nativement (Epic/GOG), l'isolation Flatpak fournit un environnement plus "standard" que les jeux Windows apprécient.:
+    # libreoffice # en flatpak car dépendances lourdes
   ];
 
   # Configuration de Git
@@ -49,9 +73,10 @@
   # Tu peux gérer ton .bashrc ici
   programs.bash = {
     enable = true;
+
     # Ton message de bienvenue
-    initExtra = ''
-      echo -e "\e[36m=== Installer un logiciel =====================================\e[0m"
+    interactiveShellInit = ''
+echo -e "\e[36m=== Installer un logiciel =====================================\e[0m"
       echo -e "- \e[33mnix shell nixpkgs#nomdulogiciel\e[0m # le logiciel est isolé, il ne fera partie d'aucune génération. Ne sera plus présent au prochain reboot"
       echo -e "- \e[33mflatpak install --user flathub nomdulogiciel\e[0m # le flatpak sera installé dans le repo flatpak userspace, depuis flathub"
       echo
@@ -65,9 +90,9 @@
       echo -e '- \e[33mcd ~/Mes-Donnees/Git/ && git init && git add . && git commit -m "description du commit" && git pull origin main && git push origin main\e[0m # synchroniser le depot git des .nix'
       echo
       echo -e "\e[36m=== Rebuild (à executer dans ~/Mes-Donnees/Git/nixos-config)===\e[0m"
-      echo -e "- \e[33msudo nixos-rebuild test --flake .#dell-5485\e[0m # rebuild simple d'une nouvelle génération"
-      echo -e "- \e[33msudo nixos-rebuild boot --flake .#dell-5485\e[0m # générer une nouvelle entrée de boot, suite au rebuild test"
-      echo -e "- \e[33msudo nixos-rebuild switch --flake .#dell-5485\e[0m # rebuild et bascule en live sur la nouvelle génération, et génère une nouvelle entrée de boot"
+      echo -e "- \e[33msudo nixos-rebuild test --flake .#$(hostname)\e[0m # rebuild simple d'une nouvelle génération"
+      echo -e "- \e[33msudo nixos-rebuild boot --flake .#$(hostname)\e[0m # générer une nouvelle entrée de boot, suite au rebuild test"
+      echo -e "- \e[33msudo nixos-rebuild switch --flake .#$(hostname)\e[0m # rebuild et bascule en live sur la nouvelle génération, et génère une nouvelle entrée de boot"
       echo
       echo -e "\e[36m=== outils de monitoring ======================================\e[0m"
       echo -e "- \e[33mduf - fastfetch - radeontop - btop - nvtop - powertp - compsize\e[0m"

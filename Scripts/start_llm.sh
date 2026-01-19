@@ -11,7 +11,7 @@ fi
 # 2. Demander à l'utilisateur quel modèle utiliser (Menu KDE)
 CHOIX=$(kdialog --menu "Quel modèle souhaites-tu réveiller ?" \
     "G" "Gemma 3 1B (Rapide)" \
-    "L" "Llama 3.2 3B (Intelligent)") \
+    "L" "Llama 3.2 3B (Intelligent)" \
     "Q" "Qwen 2.5 Coder 3B (Intelligent)")
 
 # Vérifier si l'utilisateur a annulé

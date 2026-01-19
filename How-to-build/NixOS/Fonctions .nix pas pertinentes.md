@@ -1,4 +1,4 @@
-Fonction .nix pas pertinenete
+Fonctions .nix pas pertinentes
 =============================
 
 ### environnement.nix

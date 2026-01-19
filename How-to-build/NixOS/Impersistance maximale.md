@@ -183,7 +183,7 @@ mount | grep "on / type" # on doit voir "tmpfs" pour / dans le resultat"
 df -h / # on verra que / est tout petit (même pas 100mo)
 ```
 
-### SUppresion des sous-volumes BTRFS devenus inutiles
+### Suppresion des sous-volumes BTRFS devenus inutiles
 
 @ et @var ne sont à présent plus utilisés, puis / est en tmpfs et que /var en impermanence sauf quelques éléments persistés dans le volume @nix
 

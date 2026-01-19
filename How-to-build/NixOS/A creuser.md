@@ -1,7 +1,25 @@
 A creuser
 =========
 
+## Scripts directement en déclaratif
 
+Puisque vous avez mentionné avoir des scripts de configuration, Home Manager vous permet de faire quelque chose de très puissant : écrire vos scripts directement en Nix et les ajouter à votre PATH.
+
+Au lieu d'avoir un fichier .sh qui traîne, vous pouvez faire ceci dans votre home.nix :
+
+```bash
+home.packages = with pkgs; [
+  wget
+  pandoc
+  # Exemple de script qui utilise wget et pandoc
+  (writeScriptBin "convert-web-doc" ''
+    #!/bin/bash
+    ${wget}/bin/wget -O temp.html "$1"
+    ${pandoc}/bin/pandoc temp.html -o output.pdf
+    rm temp.html
+  '')
+];
+```
 
 ## https://wiki.nixos.org/wiki/Steam
 

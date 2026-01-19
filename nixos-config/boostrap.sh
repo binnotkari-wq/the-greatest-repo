@@ -4,44 +4,124 @@ set -e
 # --- SAISIE INTERACTIVE DES VARIABLES ---
 echo "--- Configuration de l'installation NixOS ---"
 echo
-echo "Liste des disques existants :"
-lsblk -d
-echo
 
-# 1. Choix du disque
+# 1. Choix de la version de NixOS
+# Détection automatique pour information
+LIVE_VERSION=$(nixos-version | cut -d'.' -f1,2)
+
+echo -e "\n\e[36m=== Contrôle de la version NixOS ===\e[0m"
+echo -e "Version détectée sur le Live USB : \e[33m$LIVE_VERSION\e[0m"
+
+while true; do
+    echo -ne "\nVeuillez confirmer le numéro de version à installer (ex: $LIVE_VERSION) : "
+    read INPUT_VERSION
+
+    if [ "$INPUT_VERSION" == "$LIVE_VERSION" ]; then
+        NIXOS_VERSION=$INPUT_VERSION
+        echo -e "\e[32m[OK]\e[0m Version $NIXOS_VERSION validée pour l'injection dans flake.nix et ."
+        break
+    else
+        echo -e "\e[31m[ERREUR]\e[0m La version saisie ($INPUT_VERSION) ne correspond pas au Live USB ($LIVE_VERSION)."
+        echo "L'installation doit se faire sur la même version pour garantir la stabilité."
+    fi
+done
+
+
+# 2. Choix du disque ---
+echo -e "\n\e[36m=== Liste des disques physiques détectés ===\e[0m"
+# On liste les disques avec leur taille et modèle pour aider au choix
+lsblk -dn -o NAME,SIZE,MODEL
+echo -e "\e[36m============================================\e[0m"
+
 DEFAULT_DISK="nvme0n1"
-read -p "Choix du disque cible [$DEFAULT_DISK] : " DISK
-DISK=${DISK:-$DEFAULT_DISK}
 
-# 2. Choix de la version de NixOS
-DEFAULT_VERSION="25.11"
-read -p "Version de NixOS (ce doit être celle de l'environnement d'installation) [$DEFAULT_VERSION] : " NIXOS_VERSION
-NIXOS_VERSION=${NIXOS_VERSION:-$DEFAULT_VERSION}
+while true; do
+    echo -ne "\nChoix du disque cible [\e[33m$DEFAULT_DISK\e[0m] : "
+    read DISK
+    DISK=${DISK:-$DEFAULT_DISK}
 
-#### RESTE A DEMANDER A GEMINI DE FAIRE LA COMMANDE POUR INSERER CETTE VALEUR DANS LES .NIX
+    # Vérification : est-ce que le disque existe dans /dev/ ?
+    if [ -b "/dev/$DISK" ]; then
+        echo -e "\e[32m[OK]\e[0m Le disque /dev/$DISK est valide."
+
+        # Double confirmation visuelle car c'est une opération destructive
+        echo -e "\n\e[31m[ATTENTION]\e[0m TOUTES LES DONNÉES SUR /dev/$DISK VONT ÊTRE EFFACÉES."
+        echo -ne "Confirmez le nom du disque pour continuer : "
+        read CONFIRM_DISK
+
+        if [ "$DISK" == "$CONFIRM_DISK" ]; then
+            echo -e "\e[32m[CONFIRMÉ]\e[0m Disque /dev/$DISK séléctionné..."
+            break
+        else
+            echo -e "\e[31m[ERREUR]\e[0m La confirmation ne correspond pas. On recommence."
+        fi
+    else
+        echo -e "\e[31m[ERREUR]\e[0m Le périphérique /dev/$DISK n'existe pas. Vérifiez le nom (ex: sda, nvme0n1)."
+    fi
+done
 
 
-# 3. Choix du nom de la machine
-DEFAULT_FLAKE="dell_5485"
-read -p "Nom de la config dans le flake (miniscules_sans_espaces) [$DEFAULT_FLAKE] : " FLAKE_NAME
-FLAKE_NAME=${FLAKE_NAME:-$DEFAULT_FLAKE}
+# 3. Choix de la machine ---
+echo -e "\n\e[36m=== Liste des configurations disponibles dans le Flake ===\e[0m"
+# On extrait les noms des configurations (entre guillemets) dans le bloc nixosConfigurations
+grep -oP '(?<=")[^"]+(?=" = nixpkgs.lib.nixosSystem)' flake.nix
+echo -e "\e[36m==========================================================\e[0m"
 
-#### RESTE A DEMANDER A GEMINI DE FAIRE LA COMMANDE POUR INSERER CETTE VALEUR DANS LES .NIX
-#### avant cela, retrouver toutes les occurence de dell_5485 et voir si on peut regrouper tout cela dans un fichier distinct dans hosts/dell_5485, sauf l'occurence dans flake.nix
+while true; do
+    echo -ne "\nEntrez le nom exact de la machine à installer (ex: dell-5485) : "
+    read TARGET_HOSTNAME
+
+    # Vérification si le nom saisi existe bien dans le flake.nix
+    if grep -q "\"$TARGET_HOSTNAME\" = nixpkgs.lib.nixosSystem" flake.nix; then
+        echo -e "\e[32m[OK]\e[0m Configuration '$TARGET_HOSTNAME' validée."
+        break
+    else
+        echo -e "\e[31m[ERREUR]\e[0m La machine '$TARGET_HOSTNAME' n'existe pas dans le flake.nix. Réessayez."
+    fi
+done
 
 
-# 3. les valeurs de ces variables n'ont pas de raison d'être différentes
-USER_NAME="benoit"
-TARGET="/mnt"
+# 4. Choix de l'utilisateur ---
+echo -e "\n\e[36m=== Utilisateurs système détectés (./users/*.nix) ===\e[0m"
+# On liste les fichiers .nix, on enlève le chemin et l'extension .nix
+# On exclut "benoit_home.nix" ou tout fichier contenant "home" pour ne lister que les comptes système
+ls ./users/*.nix | grep -v "home" | xargs -n 1 basename | sed 's/\.nix//'
+echo -e "\e[36m=====================================================\e[0m"
 
+while true; do
+    echo -ne "\nEntrez le nom de l'utilisateur à configurer : "
+    read TARGET_USER
+
+    # On vérifie si le fichier ./users/$TARGET_USER.nix existe bien
+    if [ -f "./users/$TARGET_USER.nix" ]; then
+        echo -e "\e[32m[OK]\e[0m Utilisateur '$TARGET_USER' validé (fichier trouvé)."
+        break
+    else
+        echo -e "\e[31m[ERREUR]\e[0m L'utilisateur '$TARGET_USER n'a pas de .nix dans ./users/. Réessayez."
+    fi
+done
+
+# Optionnel : On vérifie juste si le fichier home_benoit.nix (ou autre) existe aussi
+if [ -f "./users/${TARGET_USER}_home.nix" ]; then
+    echo -e "\e[34m[INFO]\e[0m Configuration Home Manager '${TARGET_USER}_home.nix' détectée."
+fi
+
+
+# 5. les valeurs de ces variables n'ont pas de raison d'être différentes. Laisser tel quel.
+TARGET_MOUNT="/mnt"
+REPO_PATH="$TARGET_MOUNT/home/$TARGET_USER/Mes-Donnees/Git/nixos-config"
+
+
+# --- RAPPEL DES SELECTIONS ---
 echo ""
-echo "-------------------------------------------------------"
+echo -e "\e[36m==========================================================\e[0m"
 echo "RÉCAPITULATIF DE L'INSTALLATION :"
-echo "  - Disque : /dev/$DISK"
+echo "  - Machine : $TARGET_HOSTNAME"
+echo "  - Utilisateur : $TARGET_USER"
 echo "  - Version de Nixos : $NIXOS_VERSION"
-echo "  - Configuration Flake : $FLAKE_NAME"
-echo "-------------------------------------------------------"
-echo "⚠️  ATTENTION : Tout le contenu de /dev/$DISK va être effacé !"
+echo "  - Disque : /dev/$DISK"
+echo -e "\e[36m==========================================================\e[0m"
+echo -e "\n\e[31m[ATTENTION]\e[0m TOUTES LES DONNÉES SUR /dev/$DISK VONT ÊTRE EFFACÉES."
 read -p "Confirmer l'effacement et lancer l'installation ? (y/N) : " CONFIRM
 
 if [[ $CONFIRM != "y" && $CONFIRM != "Y" ]]; then
@@ -49,24 +129,28 @@ if [[ $CONFIRM != "y" && $CONFIRM != "Y" ]]; then
     exit 1
 fi
 
+
+
 # --- DÉBUT DU SCRIPT DE PARTITIONNEMENT ---
 
+# 1. TABLE DE PARTITIONS
 echo "🏗️  Création de la table de partition GPT..."
 sudo sgdisk --zap-all /dev/$DISK
 sudo sgdisk -n 1:0:+512M -t 1:ef00 -c 1:"BOOT" /dev/$DISK   # EFI
 sudo sgdisk -n 2:0:+8G    -t 2:8200 -c 2:"SWAP" /dev/$DISK   # SWAP
 sudo sgdisk -n 3:0:0       -t 3:8300 -c 3:"SYSTEM" /dev/$DISK # BTRFS
 
-# Gestion intelligente des noms de partitions (nvme0n1p1 vs sda1)
-PART_BOOT="${DISK}1"
-PART_SWAP="${DISK}2"
-PART_BTRFS="${DISK}3"
-
-if [[ /dev/$DISK == *"nvme"* || /dev/$DISK == *"mmcblk"* ]]; then
-    PART_BOOT="${DISK}p1"
-    PART_SWAP="${DISK}p2"
-    PART_BTRFS="${DISK}p3"
+# Gestion intelligente des noms de partitions (nvme vs autres)
+if [[ $DISK == *"nvme"* || $DISK == *"mmcblk"* ]]; then
+    PART_BOOT="/dev/${DISK}p1"
+    PART_SWAP="/dev/${DISK}p2"
+    PART_BTRFS="/dev/${DISK}p3"
+else
+    PART_BOOT="/dev/${DISK}1"
+    PART_SWAP="/dev/${DISK}2"
+    PART_BTRFS="/dev/${DISK}3"
 fi
+
 
 # 2. FORMATAGE
 echo "🧹 Formatage des partitions..."
@@ -77,39 +161,62 @@ sudo mkfs.btrfs -f -L NIXOS $PART_BTRFS
 
 # 3. CRÉATION DES SOUS-VOLUMES BTRFS
 echo "📦 Création des sous-volumes..."
-sudo mount $PART_BTRFS $TARGET
-sudo btrfs subvolume create $TARGET/@nix
-sudo btrfs subvolume create $TARGET/@home
-sudo umount $TARGET
+sudo mount $PART_BTRFS $TARGET_MOUNT
+sudo btrfs subvolume create $TARGET_MOUNT/@nix
+sudo btrfs subvolume create $TARGET_MOUNT/@home
+sudo umount $TARGET_MOUNT
 
 # 4. ARCHITECTURE STATELESS (RAM)
 echo "🧠 Montage du Root en RAM..."
-sudo mount -t tmpfs none $TARGET -o size=2G,mode=755
-sudo mkdir -p $TARGET/{nix,home,boot}
+sudo mount -t tmpfs none $TARGET_MOUNT -o size=2G,mode=755
+sudo mkdir -p $TARGET_MOUNT/{nix,home,boot}
 
 # 5. MONTAGES FINAUX
 echo "🔗 Montages des volumes..."
-sudo mount $PART_BTRFS $TARGET/nix -o subvol=@nix,noatime,compress=zstd,ssd,discard=async
-sudo mount $PART_BTRFS $TARGET/home -o subvol=@home,noatime,compress=zstd,ssd,discard=async
-sudo mount $PART_BOOT $TARGET/boot
+sudo mount $PART_BTRFS $TARGET_MOUNT/nix -o subvol=@nix,noatime,compress=zstd,ssd,discard=async
+sudo mount $PART_BTRFS $TARGET_MOUNT/home -o subvol=@home,noatime,compress=zstd,ssd,discard=async
+sudo mount $PART_BOOT $TARGET_MOUNT/boot
 
 # 6. GÉNÉRATION DU MATÉRIEL
 echo "🔍 Détection des composants matériels...sauf les sytèmes de fichier, qui vont être gérés par un .nix distinct"
-sudo nixos-generate-config --root $TARGET --no-filesystems
+sudo nixos-generate-config --root $TARGET_MOUNT --no-filesystems
 
 # 7. PRÉPARATION DU HOME & REPO
 echo "📂 Copie de la configuration..."
-REPO_PATH="$TARGET/home/$USER_NAME/Mes-Donnees/Git/nixos-config"
 sudo mkdir -p $(dirname $REPO_PATH) # on créé le dossier qui va acceuillir les fichiers .nix (c'est toujours là que je les met quel que soit le pc)
+sudo mkdir -p $REPO_PATH/hosts/$TARGET_HOSTNAME # on créé le dossier spécifique avec le nom de la config correspondante dans flake.nix
 sudo cp -ra . $REPO_PATH # on copie tout le contenu du dossier ou se trouve le script, c'est à dire tous les fichiers nix
-sudo chown -R 1000:1000 $TARGET/home/$USER_NAME
+sudo cp $TARGET_MOUNT/etc/nixos/hardware-configuration.nix $REPO_PATH/hosts/$TARGET_HOSTNAME/hardware-configuration.nix ## Copier le fichier fraîchement généré vers ton dossier Git
+echo "Fichiers .nix mis en place dans $REPO_PATH/"
 
-# On remplace le hardware-configuration.nix de repo git par celui généré spécifiquement pour cette machine
-sudo cp $TARGET/etc/nixos/hardware-configuration.nix $REPO_PATH/hosts/$FLAKE_NAME/hardware-configuration.nix
+# Injection dans les fichiers (Utilisation de tes commandes sed)
+echo "🔧 Adaptation de la version NixOS ($NIXOS_VERSION) dans la configuration..."
 
-# 7. INSTALLATION
-echo "❄️  Déploiement du système..."
-sudo nixos-install --flake $REPO_PATH#$FLAKE_NAME
+# Mise à jour du flake.nix avec le numéro de version NixOS à installer
+sudo sed -i "s/nixos-[0-9]\{2\}\.[0-9]\{2\}/nixos-$NIXOS_VERSION/g" "$REPO_PATH/flake.nix"
+sudo sed -i "s/release-[0-9]\{2\}\.[0-9]\{2\}/release-$NIXOS_VERSION/g" "$REPO_PATH/flake.nix"
+sudo sed -i "s/system\.stateVersion = \"[0-9]\{2\}\.[0-9]\{2\}\"/system\.stateVersion = \"$NIXOS_VERSION\"/g" "$REPO_PATH/flake.nix"
+
+# Mise à jour du fichier home de l'utilisateur ciblé avec le numéro de version NixOS à installer
+if [ -f "$REPO_PATH/users/${TARGET_USER}_home.nix" ]; then
+    sudo sed -i "s/home\.stateVersion = \"[0-9]\{2\}\.[0-9]\{2\}\"/home\.stateVersion = \"$NIXOS_VERSION\"/g" "$REPO_PATH/users/${TARGET_USER}_home.nix"
+    echo -e "\e[32m[OK]\e[0m Configuration synchronisée sur la version $NIXOS_VERSION."
+else
+    echo -e "\e[31m[ATTENTION]\e[0m Fichier ${TARGET_USER}_home.nix introuvable, stateVersion non mise à jour."
+fi
+
+# Droits utilisateur sur $TARGET_MOUNT/home/$TARGET_USER et git du repo local
+sudo chown -R 1000:1000 "$TARGET_MOUNT/home/$TARGET_USER" # On donne les droits pour le futur système
+cd "$REPO_PATH"
+sudo git init # On utilise sudo pour les commandes git dans le script pour passer outre les protections de sécurité du live USB
+sudo git add . # On utilise sudo pour les commandes git dans le script pour passer outre les protections de sécurité du live USB
+sudo chown -R 1000:1000 "$REPO_PATH" # On remet un petit coup de chown au cas où le dossier .git ait été créé en root
+
+
+# 8. INSTALLATION
+echo "❄️  Déploiement du système...sudo nixos-install --flake $REPO_PATH#$TARGET_HOSTNAME"
+read -p "Confirmer ? (y/N) : " CONFIRM
+sudo nixos-install --flake $REPO_PATH#$TARGET_HOSTNAME
 
 echo "✅ Installation terminée avec succès !"
 echo "🚀 Vous pouvez redémarrer."

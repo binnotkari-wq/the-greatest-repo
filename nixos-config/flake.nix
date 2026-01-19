@@ -14,41 +14,74 @@
 
   outputs = { self, nixpkgs, impermanence, home-manager, ... }@inputs: {
     nixosConfigurations = {
-      # C'est ici que tu définis le nom utilisé dans ton script (FLAKE_NAME)
-      dell-5485 = nixpkgs.lib.nixosSystem {
+
+
+      # --- CONFIGURATION 1 : DELL 5485 ---
+      "dell-5485" = nixpkgs.lib.nixosSystem {
         specialArgs = { inherit inputs; };
         modules = [
           # 1. Activation des modules externes
           impermanence.nixosModules.impermanence
           home-manager.nixosModules.home-manager
 
-          # 2. Le matériel (généré par bootstrap.sh))
-          ./hosts/dell-5485/hardware-configuration.nix
+          # 2. Le matériel
+          ./hosts/dell-5485/hardware-configuration.nix # celui généré par bootstrap.sh
+          ./hosts/dell-5485/tuning.nix
 
-          # 3. Tes modules de configuration (déportés)
-          ./modules/file_systems.nix
-          ./modules/system.nix
-          ./modules/boot.nix
-          ./modules/persistence.nix
-          ./modules/users.nix
-          ./modules/apps.nix
-          ./modules/TDP.nix
-          # ./modules/gaming.nix
+          # 3. Tes modules de configuration système
+          ./OS/core.nix
+          ./OS/apps.nix
+          # ./OS/gaming.nix
 
-          # 4. Configuration directe (anciennement configuration.nix)
+          # 4. Tes modules de configuration utilisateur + home manager
+          ./users/benoit.nix
+
+          # 5. Configuration directe (anciennement configuration.nix)
           {
             system.stateVersion = "25.11";
             networking.hostName = "dell-5485";
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
             home-manager.extraSpecialArgs = { inherit inputs; };
-            home-manager.users.benoit = import ./modules/home.nix;
+            home-manager.users.benoit = import ./users/benoit_home.nix;
           }
         ];
       };
 
-      # Si tu installes une AUTRE machine, tu pourras copier-coller
-      # ce bloc ici avec un autre nom (ex: "nouveau_pc")
+
+      # --- CONFIGURATION 2 : Ryzen 5 3600 ---
+      "r5-3600" = nixpkgs.lib.nixosSystem {
+        specialArgs = { inherit inputs; };
+        modules = [
+          # 1. Activation des modules externes
+          impermanence.nixosModules.impermanence
+          home-manager.nixosModules.home-manager
+
+          # 2. Le matériel
+          ./hosts/r5-3600/hardware-configuration.nix # celui généré par bootstrap.sh
+          ./hosts/r5-3600/tuning.nix
+
+          # 3. Tes modules de configuration système
+          ./OS/core.nix
+          ./OS/apps.nix
+          ./OS/gaming.nix
+
+          # 4. Tes modules de configuration utilisateur + home manager
+          ./users/benoit.nix
+
+          # 5. Configuration directe (anciennement configuration.nix)
+          {
+            system.stateVersion = "25.11";
+            networking.hostName = "r5-3600";
+            home-manager.useGlobalPkgs = true;
+            home-manager.useUserPackages = true;
+            home-manager.extraSpecialArgs = { inherit inputs; };
+            home-manager.users.benoit = import ./users/benoit_home.nix;
+          }
+        ];
+      };
+
+
     };
   };
 }

@@ -1,9 +1,6 @@
 { config, lib, pkgs, ... }:
 
 {
-  # Débloque l'accès aux tensions pour CoreCtrl et le noyau
-  boot.kernelParams = [ "amdgpu.ppfeaturemask=0xffffffff" ];
-
   # La nouvelle manière officielle de débloquer l'overclocking/undervolting
   hardware.amdgpu.overdrive.enable = true;
 

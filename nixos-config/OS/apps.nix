@@ -9,6 +9,7 @@
     pkgs.kdePackages.kdialog
     pkgs.kdePackages.kde-cli-tools
     pkgs.kdePackages.kdeconnect-kde
+    kdePackages.partitionmanager
   ];
 
   #Logiciels à supprimer du lot de base de KDE

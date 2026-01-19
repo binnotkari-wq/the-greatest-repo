@@ -31,7 +31,7 @@
           # 3. Tes modules de configuration système
           ./OS/core.nix
           ./OS/apps.nix
-          # ./OS/gaming.nix
+          ./OS/gaming.nix
 
           # 4. Tes modules de configuration utilisateur + home manager
           ./users/benoit.nix

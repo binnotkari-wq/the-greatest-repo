@@ -45,9 +45,3 @@ Ou, plus efficace en un seul copié-collé :
 Si demandé
     - Username : binnotkari-wq
     - Password : Colle ici le Token que tu viens de copier. (Note : Rien ne s'affichera quand tu colles, c'est normal pour la sécurité. Colle et appuie sur Entrée).
-
-
-Token de github :
-```bash
-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
-```

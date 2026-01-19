@@ -27,20 +27,21 @@
     wget
     pandoc
     firefox # natif car pour une meilleure intégration système (KDE Connect, gestion des mots de passe, accélération matérielle). Le Flatpak peut parfois briser le sandboxing interne de Firefox.
+    kdePackages.kate
+    kdePackages.markdownpart
     kiwix
     qownnotes
-    skanpage
-    kolourpaint
-    kompare
-    kcalc
+    kdePackages.skanpage
+    kdePackages.kolourpaint
+    kdePackages.kompare
+    kdePackages.kcalc
     librecad
     haruna
-    kate
     keepassxc
-    # krita
     kstars
-    ktorrent
-    marble
+    kdePackages.ktorrent
+    kdePackages.marble
+    # krita
     # org.virt_manager.virt_manager.Extension.Qemu org.virt_manager.virt-manager
     # kdenlive
     # steam # Très bien maintenu par l'équipe NixOS. Meilleures performances avec Gamescope/MangoHud que vous utilisez. Installez Steam via programs.steam.enable = true (pour profiter de votre config Gamescope). Système (systemPackages), car ils ont besoin de parler très intimement au noyau (Kernel) et aux pilotes graphiques.
@@ -74,9 +75,9 @@
   programs.bash = {
     enable = true;
 
-    # Ton message de bienvenue
-    interactiveShellInit = ''
-echo -e "\e[36m=== Installer un logiciel =====================================\e[0m"
+    # On remplace interactiveShellInit par initExtra
+    initExtra = ''
+      echo -e "\e[36m=== Installer un logiciel =====================================\e[0m"
       echo -e "- \e[33mnix shell nixpkgs#nomdulogiciel\e[0m # le logiciel est isolé, il ne fera partie d'aucune génération. Ne sera plus présent au prochain reboot"
       echo -e "- \e[33mflatpak install --user flathub nomdulogiciel\e[0m # le flatpak sera installé dans le repo flatpak userspace, depuis flathub"
       echo
@@ -87,7 +88,7 @@ echo -e "\e[36m=== Installer un logiciel =====================================\e
       echo -e "\e[36m=== Mettre à jour =============================================\e[0m"
       echo -e "- \e[33mcd ~/Mes-Donnees/Git/nixos-config && nix flake update\e[0m # update système"
       echo -e "- \e[33mflatpak update -y\e[0m # mise à jour flatpaks"
-      echo -e '- \e[33mcd ~/Mes-Donnees/Git/ && git init && git add . && git commit -m "description du commit" && git pull origin main && git push origin main\e[0m # synchroniser le depot git des .nix'
+      echo -e '- \e[33mcd ~/Mes-Donnees/Git/ && git add . && git commit -m "description du commit" && git pull origin main && git push origin main\e[0m # synchroniser le depot git des .nix'
       echo
       echo -e "\e[36m=== Rebuild (à executer dans ~/Mes-Donnees/Git/nixos-config)===\e[0m"
       echo -e "- \e[33msudo nixos-rebuild test --flake .#$(hostname)\e[0m # rebuild simple d'une nouvelle génération"
@@ -97,6 +98,13 @@ echo -e "\e[36m=== Installer un logiciel =====================================\e
       echo -e "\e[36m=== outils de monitoring ======================================\e[0m"
       echo -e "- \e[33mduf - fastfetch - radeontop - btop - nvtop - powertp - compsize\e[0m"
       echo -e "- \e[33msudo compsize /nix\e[0m # analyser la compression btrfs du sous-volume @nix"
+
+
+      # Tes instructions d'historique peuvent rester ici ou dans bashrcExtra
+      if [[ $SHLVL -eq 1 ]]; then
+        history -s "# SESSION $(date +%s) $$"
+        history -a
+      fi
     '';
 
     # Variables de session
@@ -104,12 +112,5 @@ echo -e "\e[36m=== Installer un logiciel =====================================\e
       FLATPAK_DOWNLOAD_TMPDIR = "$HOME/.flatpak-tmp";
       HISTTIMEFORMAT = "%d/%m/%y %T ";
     };
-    # Pour ton script de gestion d'historique
-    bashrcExtra = ''
-      if [[ $SHLVL -eq 1 ]]; then
-        history -s "# SESSION $(date +%s) $$"
-        history -a
-      fi
-    '';
   };
 }

@@ -23,9 +23,6 @@
   services.qemuGuest.enable = true;
   services.spice-vdagentd.enable = true; # Pour le copier-coller et le redimensionnement auto
 
-  # Ou si tu utilises les "guest additions" génériques
-  virtualisation.spiceVDAgent.enable = true;
-
   # Accélération vidéo VirtIO (essentiel pour la fluidité de l'interface)
   services.xserver.videoDrivers = [ "virtio" ];
 

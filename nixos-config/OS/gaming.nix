@@ -1,6 +1,7 @@
 { pkgs, ... }:
 
 let
+
 # On définit la session avec les métadonnées exigées par NixOS
   steam-custom-session = pkgs.runCommand "steam-custom-session" {
     passthru.providedSessions = [ "steam-custom" ];
@@ -37,7 +38,20 @@ in
 
   # 3. On ajoute juste MangoHud pour les stats en jeu
   environment.systemPackages = with pkgs; [
+    gamescope
     mangohud
     protonup-qt
+    steam-custom-session
+
+    # LE SCRIPT DE RETOUR AU BUREAU
+    (pkgs.writeShellScriptBin "steamos-session-select" ''
+      case "$1" in
+        *)
+          echo "Retour vers le bureau..."
+          ${pkgs.steam}/bin/steam -shutdown
+          ;;
+      esac
+    '')
+
   ];
 }

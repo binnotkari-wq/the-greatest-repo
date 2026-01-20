@@ -2,6 +2,9 @@
 
 {
 
+  # UUID LUKS2 spécifique à la machine (injecté à l'installation de NixOS par mon script bootstrap)
+  boot.initrd.luks.devices."cryptroot".device = "/dev/disk/by-uuid/REPLACE_ME_LUKS_UUID";
+
   boot.initrd.availableKernelModules = [
     "virtio_net"
     "virtio_pci"
@@ -26,19 +29,12 @@
   # Accélération vidéo VirtIO (essentiel pour la fluidité de l'interface)
   services.xserver.videoDrivers = [ "virtio" ];
 
-  # Montage automatique de dossiers partagés (exemple QEMU/9P)
-  # Avec 9P
+  # Montage automatique de dossiers partagés (avec 9P : ne necessitepas de module kernel contrairement au partage virtio)
   fileSystems."/mnt/shared" = {
     fsType = "9p";
     device = "partage";
     options = [ "trans=virtio" "version=9p2000.L" ];
   };
-
-  # Avec virtio (plus performant mais necessite un module sur l'hôte)
-  # fileSystems."/mnt/shared" = {
-    # device = "partage"; # Le nom (tag) défini dans Virt-Manager
-    # fsType = "virtiofs";
-  # };
 
 }
 

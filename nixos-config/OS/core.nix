@@ -7,6 +7,10 @@
   boot.kernelPackages = pkgs.linuxPackages_latest;
   boot.kernelParams = [ "quiet" "splash" "loglevel=3" "rd.systemd.show_status=false" ];
 
+  boot.initrd.luks.devices."cryptroot" = {
+    allowDiscards = true;   # Pour le TRIM
+    bypassWorkqueues = true; # Pour la performance SSD/NVMe
+  };
 
   # --- BOOT GRAPHIQUE ---
   boot.plymouth = {
@@ -16,16 +20,16 @@
 
 
   # --- SYSTEMES DE FICHIERS ---
+  fileSystems."/boot" =
+    { device = "/dev/disk/by-label/BOOT";
+      fsType = "vfat";
+      options = [ "fmask=0022" "dmask=0022" ];
+    };
+
   fileSystems."/" =
     { device = "none";
       fsType = "tmpfs"; # / est un tmpfs : son contenu est donc effacé au redémarrage. Quelques fichiers doivent persister, il y a donc des bind mount créé à chaque démaraage depuis /nix (voir plus bas dans la partie PERSISTENCE)
       options = [ "defaults" "size=2G" "mode=755" ];
-    };
-
-  fileSystems."/home" =
-    { device = "/dev/disk/by-label/NIXOS";
-      fsType = "btrfs";
-      options = [ "subvol=@home" "noatime" "compress=zstd" "ssd" "discard=async" ];
     };
 
   fileSystems."/nix" =
@@ -34,17 +38,22 @@
       options = [ "subvol=@nix" "noatime" "compress=zstd" "ssd" "discard=async" ];
     };
 
-  fileSystems."/boot" =
-    { device = "/dev/disk/by-label/BOOT";
-      fsType = "vfat";
-      options = [ "fmask=0022" "dmask=0022" ];
+  fileSystems."/home" =
+    { device = "/dev/disk/by-label/NIXOS";
+      fsType = "btrfs";
+      options = [ "subvol=@home" "noatime" "compress=zstd" "ssd" "discard=async" ];
     };
 
-  swapDevices = [
-    { device = "/dev/disk/by-label/SWAP"; }
-  ];
+  fileSystems."/swap" = {
+    device = "/dev/disk/by-label/NIXOS";
+    fsType = "btrfs";
+    options = [ "subvol=@swap" "noatime" "ssd" ];
+  };
+
+  swapDevices = [ { device = "/swap/swapfile"; } ];
 
   zramSwap.enable = true;
+  zramSwap.priority = 100;
   zramSwap.memoryPercent = 30; # Utilise jusqu'à 30% de tes 12Go si besoin
 
 

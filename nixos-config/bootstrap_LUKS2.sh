@@ -210,7 +210,7 @@ sudo sed -i "s/system\.stateVersion = \"[0-9]\{2\}\.[0-9]\{2\}\"/system\.stateVe
 sudo sed -i "s/home\.stateVersion = \"[0-9]\{2\}\.[0-9]\{2\}\"/home\.stateVersion = \"$NIXOS_VERSION\"/g" "$REPO_PATH/users/${TARGET_USER}_home.nix"
 
 # Injection de l'UUID LUKS2 dans le fichier .nix spécifique à la machine
-sudo sed -i "s|by-uuid/[a-zA-Z0-9-]*|by-uuid/$REAL_UUID|g" "$REPO_PATH/hosts/$TARGET_HOSTNAME/tuning.nix"
+sudo sed -i "s|by-uuid/[^\"]*|by-uuid/$REAL_UUID|g" "$REPO_PATH/hosts/$TARGET_HOSTNAME/tuning.nix"
 
 # Droits utilisateur sur $TARGET_MOUNT/home/$TARGET_USER et git du repo local
 sudo chown -R 1000:1000 "$TARGET_MOUNT/home/$TARGET_USER" # On donne les droits pour le futur système
@@ -231,4 +231,4 @@ echo "🚀 Vous pouvez redémarrer."
 echo "Point à verifier :"
 echo "- le numéro de version de NixOS dans $REPO_PATH/flake.nix"
 echo "- le numéro de version de NixOS dans $REPO_PATH/users/${TARGET_USER}_home.nix"
-echo "- l'UUID LUKS2 dans $REPO_PATH/hosts/$TARGET_HOSTNAME/tuning.nix
+echo "- l'UUID LUKS2 dans $REPO_PATH/hosts/$TARGET_HOSTNAME/tuning.nix"

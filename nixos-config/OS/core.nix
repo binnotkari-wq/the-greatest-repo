@@ -7,10 +7,6 @@
   boot.kernelPackages = pkgs.linuxPackages_latest;
   boot.kernelParams = [ "quiet" "splash" "loglevel=3" "rd.systemd.show_status=false" ];
 
-  boot.initrd.luks.devices."cryptroot" = {
-    allowDiscards = true;   # Pour le TRIM
-    bypassWorkqueues = true; # Pour la performance SSD/NVMe
-  };
 
   # --- BOOT GRAPHIQUE ---
   boot.plymouth = {
@@ -19,39 +15,24 @@
   };
 
 
-  # --- SYSTEMES DE FICHIERS ---
-  fileSystems."/boot" =
-    { device = "/dev/disk/by-label/BOOT";
-      fsType = "vfat";
-      options = [ "fmask=0022" "dmask=0022" ];
-    };
-
-  fileSystems."/" =
-    { device = "none";
-      fsType = "tmpfs"; # / est un tmpfs : son contenu est donc effacé au redémarrage. Quelques fichiers doivent persister, il y a donc des bind mount créé à chaque démaraage depuis /nix (voir plus bas dans la partie PERSISTENCE)
-      options = [ "defaults" "size=2G" "mode=755" ];
-    };
-
-  fileSystems."/nix" =
-    { device = "/dev/disk/by-label/NIXOS";
-      fsType = "btrfs";
-      options = [ "subvol=@nix" "noatime" "compress=zstd" "ssd" "discard=async" ];
-    };
-
-  fileSystems."/home" =
-    { device = "/dev/disk/by-label/NIXOS";
-      fsType = "btrfs";
-      options = [ "subvol=@home" "noatime" "compress=zstd" "ssd" "discard=async" ];
-    };
-
-  fileSystems."/swap" = {
-    device = "/dev/disk/by-label/NIXOS";
-    fsType = "btrfs";
-    options = [ "subvol=@swap" "noatime" "ssd" ];
+  # --- SYSTEMES DE FICHIERS : ADD-ON à hardware-configuration.nix ---
+  # la génération automatique de harware-configuration ne detecte pas automatiquement les options de montage à l'installation (https://wiki.nixos.org/wiki/Btrfs)
+  fileSystems = {
+  "/".options = [ "defaults" "size=2G" "mode=755" ]; # / est un tmpfs : son contenu est donc effacé au redémarrage. Quelques fichiers doivent persister,voir plus bas dans la partie PERSISTENCE.
+  "/home".options = [ "noatime" "compress=zstd" "ssd" "discard=async" ];
+  "/nix".options = [ "noatime" "compress=zstd" "ssd" "discard=async" ];
+  "/swap".options = [ "noatime" "ssd"];
   };
 
   swapDevices = [ { device = "/swap/swapfile"; } ];
 
+  boot.initrd.luks.devices."cryptroot" = {
+    allowDiscards = true; # autorises le TRIM à traverser LUKS
+    bypassWorkqueues = true; # Améliore la performance sur les SSD NVMe
+  };
+
+
+  # --- ACTIVATION DU SWAP EN RAM COMPRESSEE (sera utilisé en priorité avant le swap sur disque) ---
   zramSwap.enable = true;
   zramSwap.priority = 100;
   zramSwap.memoryPercent = 30; # Utilise jusqu'à 30% de tes 12Go si besoin
@@ -59,7 +40,8 @@
 
   # --- PERSISTENCE ---
   # On utilise le sous-volume /nix (déjà persistant) pour stocker les rares fichiers de /etc et /var à conserver entre chaque démarrage.
-  # Si /home n'est pas sur une partion ou des sous-volume btrfs disincts, il faut le lister ici.
+  # Les bind mount seront créés d'après cette liste.
+  # Si /nix et /home ne sont pas sur une partion ou des sous-volume btrfs disincts, il faut les lister ici.
   environment.persistence."/nix/persist" = {
     directories = [
       "/etc/NetworkManager/system-connections" # Wi-Fi
@@ -68,6 +50,7 @@
       "/var/lib/nixos"
       "/var/lib/cups"
       "/var/lib/fwupd"
+      # "/nix"
       # "/home"
     ];
     files = [
@@ -95,11 +78,6 @@
     LC_TIME = "fr_FR.UTF-8";
   };
   console.keyMap = "fr";
-
-
-  # --- ENVIRONNEMENT DE BUREAU ---
-  services.displayManager.sddm.enable = true;
-  services.desktopManager.plasma6.enable = true;
   services.xserver.xkb = {
     layout = "fr";
     variant = "";
@@ -133,4 +111,23 @@
   # --- OPTIMISATION NIX ---
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
   nixpkgs.config.allowUnfree = true;
+
+
+  # --- TOOLBOX CLI ---
+    environment.systemPackages = with pkgs; [
+    fzf
+    duf
+    mc # gestionnaire de fichiers en CLI
+    lynx # navigateur web en CLI
+    btop
+    htop
+    fastfetch
+    compsize
+    git
+    wget
+    vtm # un desktop en CLI
+    zellij # un autre desktop en CLI
+    musickube # lecteur de musique en CLI
+  ];
+
 }

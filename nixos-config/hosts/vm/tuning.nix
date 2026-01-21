@@ -2,9 +2,6 @@
 
 {
 
-  # UUID LUKS2 spécifique à la machine (injecté à l'installation de NixOS par mon script bootstrap)
-  boot.initrd.luks.devices."cryptroot".device = "/dev/disk/by-uuid/REPLACE_ME_LUKS_UUID";
-
   boot.initrd.availableKernelModules = [
     "virtio_net"
     "virtio_pci"
@@ -37,4 +34,3 @@
   };
 
 }
-

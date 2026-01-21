@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
-# --- SAISIE INTERACTIVE DES VARIABLES ---
+# --- DEBUT DE LA DEFINITION DES VARIABLES ---
 echo "--- Configuration de l'installation NixOS ---"
 echo
 
@@ -128,10 +128,10 @@ if [[ $CONFIRM != "y" && $CONFIRM != "Y" ]]; then
     echo "❌ Installation annulée."
     exit 1
 fi
+# --- DEBUT DE LA DEFINITION DES VARIABLES ---
 
 
 # --- DÉBUT DU SCRIPT DE PARTITIONNEMENT ---
-
 # 1. TABLE DE PARTITIONS
 echo "🏗️  Création de la table de partition GPT..."
 sudo sgdisk --zap-all /dev/$DISK
@@ -186,13 +186,20 @@ echo "💾 Création du swapfile de 4Go..."
 sudo btrfs filesystem mkswapfile --size 4g $TARGET_MOUNT/swap/swapfile
 sudo swapon $TARGET_MOUNT/swap/swapfile
 
+# --- FIN DU SCRIPT DE PARTITIONNEMENT ---
+
+
+
+
 # 9. GÉNÉRATION DU MATÉRIEL
 echo "🔍 Détection des composants matériels...sauf les sytèmes de fichier, qui vont être gérés par un .nix distinct"
 sudo nixos-generate-config --root $TARGET_MOUNT --no-filesystems
 
+# A SUPRIMER DEFINITIVEMENT SI INSTALL VM OK
 # 10. CAPTURE DE L'UUID LUKS2 ---
-echo "🆔 Récupération de l'UUID LUKS..."
-REAL_UUID=$(blkid -s UUID -o value $PART_LUKS)
+# echo "🆔 Récupération de l'UUID LUKS..."
+# REAL_UUID=$(blkid -s UUID -o value "$PART_LUKS")
+
 
 # 10. PRÉPARATION DU HOME & REPO
 echo "📂 Copie de la configuration..."
@@ -209,8 +216,9 @@ sudo sed -i "s/release-[0-9]\{2\}\.[0-9]\{2\}/release-$NIXOS_VERSION/g" "$REPO_P
 sudo sed -i "s/system\.stateVersion = \"[0-9]\{2\}\.[0-9]\{2\}\"/system\.stateVersion = \"$NIXOS_VERSION\"/g" "$REPO_PATH/flake.nix"
 sudo sed -i "s/home\.stateVersion = \"[0-9]\{2\}\.[0-9]\{2\}\"/home\.stateVersion = \"$NIXOS_VERSION\"/g" "$REPO_PATH/users/${TARGET_USER}_home.nix"
 
+# A SUPRIMER DEFINITIVEMENT SI INSTALL VM OK
 # Injection de l'UUID LUKS2 dans le fichier .nix spécifique à la machine
-sudo sed -i "s|by-uuid/[^\"]*|by-uuid/$REAL_UUID|g" "$REPO_PATH/hosts/$TARGET_HOSTNAME/tuning.nix"
+# sudo sed -i "s|by-uuid/[^\"]*|by-uuid/$REAL_UUID|g" "$REPO_PATH/hosts/$TARGET_HOSTNAME/tuning.nix"
 
 # Droits utilisateur sur $TARGET_MOUNT/home/$TARGET_USER et git du repo local
 sudo chown -R 1000:1000 "$TARGET_MOUNT/home/$TARGET_USER" # On donne les droits pour le futur système

@@ -30,7 +30,7 @@
 
           # 3. Tes modules de configuration système
           ./OS/core.nix
-          ./OS/apps.nix
+          ./OS/desktop_environment.nix
           ./OS/gaming.nix
 
           # 4. Tes modules de configuration utilisateur + home manager
@@ -63,8 +63,8 @@
 
           # 3. Tes modules de configuration système
           ./OS/core.nix
-          ./OS/apps.nix
-          ./OS/gaming.nix
+          ./OS/desktop_environment.nix
+          ./OS/SteamOS.nix
 
           # 4. Tes modules de configuration utilisateur + home manager
           ./users/benoit.nix
@@ -96,8 +96,8 @@
 
           # 3. Tes modules de configuration système
           ./OS/core.nix
-          ./OS/apps.nix
-          # ./OS/gaming.nix
+          ./OS/desktop_environment.nix
+          # ./OS/SteamOS.nix
 
           # 4. Tes modules de configuration utilisateur + home manager
           ./users/benoit.nix

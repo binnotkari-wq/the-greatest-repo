@@ -12,41 +12,6 @@
 
   # List packages installed for user only
   home.packages = with pkgs; [
-    fzf
-    duf
-    mc
-    lynx
-    btop
-    htop
-    powertop
-    nvtopPackages.amd
-    radeontop
-    fastfetch
-    compsize
-    pkgs.llama-cpp-vulkan
-    wget
-    pandoc
-    firefox # natif car pour une meilleure intégration système (KDE Connect, gestion des mots de passe, accélération matérielle). Le Flatpak peut parfois briser le sandboxing interne de Firefox.
-    kdePackages.kate
-    kdePackages.markdownpart
-    kiwix
-    qownnotes
-    kdePackages.skanpage
-    kdePackages.kolourpaint
-    kdePackages.kompare
-    kdePackages.kcalc
-    librecad
-    haruna
-    keepassxc
-    kstars
-    kdePackages.ktorrent
-    kdePackages.marble
-    # krita
-    # org.virt_manager.virt_manager.Extension.Qemu org.virt_manager.virt-manager
-    # kdenlive
-    # steam # Très bien maintenu par l'équipe NixOS. Meilleures performances avec Gamescope/MangoHud que vous utilisez. Installez Steam via programs.steam.enable = true (pour profiter de votre config Gamescope). Système (systemPackages), car ils ont besoin de parler très intimement au noyau (Kernel) et aux pilotes graphiques.
-    # heroic # C'est l'un des rares cas où le Flatpak est souvent recommandé par la communauté NixOS. Comme Heroic gère des jeux provenant de magasins qui ne supportent pas Linux nativement (Epic/GOG), l'isolation Flatpak fournit un environnement plus "standard" que les jeux Windows apprécient.:
-    # libreoffice # en flatpak car dépendances lourdes
   ];
 
   # Configuration de Git
@@ -62,7 +27,7 @@
     };
   };
 
-  # Configuration de btop (plus sympa qu'une installation simple)
+  # Configuration de btop
   programs.btop = {
     enable = true;
     settings = {
@@ -71,11 +36,10 @@
     };
   };
 
-  # Tu peux gérer ton .bashrc ici
+  # Configuration de bash
   programs.bash = {
     enable = true;
 
-    # On remplace interactiveShellInit par initExtra
     initExtra = ''
       echo -e "\e[36m=== Installer un logiciel =====================================\e[0m"
       echo -e "- \e[33mnix shell nixpkgs#nomdulogiciel\e[0m # le logiciel est isolé, il ne fera partie d'aucune génération. Ne sera plus présent au prochain reboot"

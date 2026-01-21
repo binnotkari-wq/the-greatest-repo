@@ -2,9 +2,6 @@
 
 {
 
-  # UUID LUKS2 spécifique à la machine (injecté à l'installation de NixOS par mon script bootstrap)
-  boot.initrd.luks.devices."cryptroot".device = "/dev/disk/by-uuid/REPLACE_ME_LUKS_UUID";
-
   # La nouvelle manière officielle de débloquer l'overclocking/undervolting
   hardware.amdgpu.overdrive.enable = true;
 
@@ -14,6 +11,9 @@
   # Gestion TDP APU (Ryzen 3500U)
   environment.systemPackages = with pkgs; [
     ryzenadj
+    powertop # gestion d'énèrgie
+    nvtopPackages.amd
+    radeontop
   ];
 
   # Alias pour le confort

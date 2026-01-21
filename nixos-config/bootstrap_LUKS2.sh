@@ -193,7 +193,8 @@ sudo swapon $TARGET_MOUNT/swap/swapfile
 
 # 9. GÉNÉRATION DU MATÉRIEL
 echo "🔍 Détection des composants matériels...sauf les sytèmes de fichier, qui vont être gérés par un .nix distinct"
-sudo nixos-generate-config --root $TARGET_MOUNT --no-filesystems
+# sudo nixos-generate-config --root $TARGET_MOUNT --no-filesystems # A SUPRIMER DEFINITIVEMENT SI INSTALL VM OK
+sudo nixos-generate-config --root $TARGET_MOUNT
 
 # A SUPRIMER DEFINITIVEMENT SI INSTALL VM OK
 # 10. CAPTURE DE L'UUID LUKS2 ---

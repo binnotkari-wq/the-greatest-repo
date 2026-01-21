@@ -125,9 +125,10 @@
     compsize
     git
     wget
+    powertop # gestion d'énèrgie https://commandmasters.com/commands/powertop-linux/
     vtm # un desktop en CLI
     zellij # un autre desktop en CLI
-    musickube # lecteur de musique en CLI
+    musikcube # lecteur de musique en CLI
   ];
 
 }

@@ -32,7 +32,7 @@
           ./OS/core.nix
           ./OS/desktop_environment.nix
           ./OS/special_apps.nix
-          ./OS/gaming.nix
+          ./OS/SteamOS.nix
 
           # 4. Tes modules de configuration utilisateur + home manager
           ./users/benoit.nix

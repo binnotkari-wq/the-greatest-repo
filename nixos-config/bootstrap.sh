@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
-# --- SAISIE INTERACTIVE DES VARIABLES ---
+# --- DEBUT DE LA DEFINITION DES VARIABLES ---
 echo "--- Configuration de l'installation NixOS ---"
 echo
 
@@ -128,60 +128,81 @@ if [[ $CONFIRM != "y" && $CONFIRM != "Y" ]]; then
     echo "❌ Installation annulée."
     exit 1
 fi
-
+# --- DEBUT DE LA DEFINITION DES VARIABLES ---
 
 
 # --- DÉBUT DU SCRIPT DE PARTITIONNEMENT ---
-
 # 1. TABLE DE PARTITIONS
 echo "🏗️  Création de la table de partition GPT..."
 sudo sgdisk --zap-all /dev/$DISK
 sudo sgdisk -n 1:0:+512M -t 1:ef00 -c 1:"BOOT" /dev/$DISK   # EFI
-sudo sgdisk -n 2:0:+8G    -t 2:8200 -c 2:"SWAP" /dev/$DISK   # SWAP
-sudo sgdisk -n 3:0:0       -t 3:8300 -c 3:"SYSTEM" /dev/$DISK # BTRFS
+sudo sgdisk -n 2:0:0      -t 2:8300 -c 2:"SYSTEM" /dev/$DISK # LUKS + BTRFS
 
 # Gestion intelligente des noms de partitions (nvme vs autres)
 if [[ $DISK == *"nvme"* || $DISK == *"mmcblk"* ]]; then
     PART_BOOT="/dev/${DISK}p1"
-    PART_SWAP="/dev/${DISK}p2"
-    PART_BTRFS="/dev/${DISK}p3"
+    PART_LUKS="/dev/${DISK}p2"
 else
     PART_BOOT="/dev/${DISK}1"
-    PART_SWAP="/dev/${DISK}2"
-    PART_BTRFS="/dev/${DISK}3"
+    PART_LUKS="/dev/${DISK}2"
 fi
 
+# 2. CHIFFREMENT LUKS2
+echo "🔐 Chiffrement de la partition système (LUKS2)..."
+# On utilise les réglages standards robustes
+sudo cryptsetup luksFormat --type luks2 $PART_LUKS
+echo "🔓 Ouverture du conteneur chiffré..."
+sudo cryptsetup open $PART_LUKS cryptroot
+PART_BTRFS="/dev/mapper/cryptroot"
 
-# 2. FORMATAGE
+# 3. FORMATAGE
 echo "🧹 Formatage des partitions..."
 sudo mkfs.vfat -F 32 -n BOOT $PART_BOOT
-sudo mkswap -L SWAP $PART_SWAP
-sudo swapon $PART_SWAP
 sudo mkfs.btrfs -f -L NIXOS $PART_BTRFS
 
-# 3. CRÉATION DES SOUS-VOLUMES BTRFS
+# 4. CRÉATION DES SOUS-VOLUMES BTRFS
 echo "📦 Création des sous-volumes..."
 sudo mount $PART_BTRFS $TARGET_MOUNT
 sudo btrfs subvolume create $TARGET_MOUNT/@nix
 sudo btrfs subvolume create $TARGET_MOUNT/@home
+sudo btrfs subvolume create $TARGET_MOUNT/@swap
 sudo umount $TARGET_MOUNT
 
-# 4. ARCHITECTURE STATELESS (RAM)
+# 5. ARCHITECTURE STATELESS (RAM)
 echo "🧠 Montage du Root en RAM..."
 sudo mount -t tmpfs none $TARGET_MOUNT -o size=2G,mode=755
-sudo mkdir -p $TARGET_MOUNT/{nix,home,boot}
+sudo mkdir -p $TARGET_MOUNT/{boot,nix,home,swap}
 
-# 5. MONTAGES FINAUX
+# 7. MONTAGES FINAUX
 echo "🔗 Montages des volumes..."
+sudo mount $PART_BOOT $TARGET_MOUNT/boot
 sudo mount $PART_BTRFS $TARGET_MOUNT/nix -o subvol=@nix,noatime,compress=zstd,ssd,discard=async
 sudo mount $PART_BTRFS $TARGET_MOUNT/home -o subvol=@home,noatime,compress=zstd,ssd,discard=async
-sudo mount $PART_BOOT $TARGET_MOUNT/boot
+sudo mount $PART_BTRFS $TARGET_MOUNT/swap -o subvol=@swap,noatime,ssd # Pas de compression sur le swap, pas de trim (discard=async) car vu le contenu changeant du swapfile, il y aurait un trim constant
+# NB : l'autorisation du trim des données avant leur chiffrement par LUKS est déclarée dans les .nix
 
-# 6. GÉNÉRATION DU MATÉRIEL
+# 8. CRÉATION DU SWAPFILE (Méthode moderne Btrfs)
+echo "💾 Création du swapfile de 4Go..."
+sudo btrfs filesystem mkswapfile --size 4g $TARGET_MOUNT/swap/swapfile
+sudo swapon $TARGET_MOUNT/swap/swapfile
+
+# --- FIN DU SCRIPT DE PARTITIONNEMENT ---
+
+
+
+
+# 9. GÉNÉRATION DU MATÉRIEL
 echo "🔍 Détection des composants matériels...sauf les sytèmes de fichier, qui vont être gérés par un .nix distinct"
-sudo nixos-generate-config --root $TARGET_MOUNT --no-filesystems
+# sudo nixos-generate-config --root $TARGET_MOUNT --no-filesystems # A SUPRIMER DEFINITIVEMENT SI INSTALL VM OK
+sudo nixos-generate-config --root $TARGET_MOUNT
 
-# 7. PRÉPARATION DU HOME & REPO
+# A SUPRIMER DEFINITIVEMENT SI INSTALL VM OK
+# 10. CAPTURE DE L'UUID LUKS2 ---
+# echo "🆔 Récupération de l'UUID LUKS..."
+# REAL_UUID=$(blkid -s UUID -o value "$PART_LUKS")
+
+
+# 10. PRÉPARATION DU HOME & REPO
 echo "📂 Copie de la configuration..."
 sudo mkdir -p $(dirname $REPO_PATH) # on créé le dossier qui va acceuillir les fichiers .nix (c'est toujours là que je les met quel que soit le pc)
 sudo mkdir -p $REPO_PATH/hosts/$TARGET_HOSTNAME # on créé le dossier spécifique avec le nom de la config correspondante dans flake.nix
@@ -189,21 +210,16 @@ sudo cp -ra . $REPO_PATH # on copie tout le contenu du dossier ou se trouve le s
 sudo cp $TARGET_MOUNT/etc/nixos/hardware-configuration.nix $REPO_PATH/hosts/$TARGET_HOSTNAME/hardware-configuration.nix ## Copier le fichier fraîchement généré vers ton dossier Git
 echo "Fichiers .nix mis en place dans $REPO_PATH/"
 
-# Injection dans les fichiers (Utilisation de tes commandes sed)
-echo "🔧 Adaptation de la version NixOS ($NIXOS_VERSION) dans la configuration..."
 
 # Mise à jour du flake.nix avec le numéro de version NixOS à installer
 sudo sed -i "s/nixos-[0-9]\{2\}\.[0-9]\{2\}/nixos-$NIXOS_VERSION/g" "$REPO_PATH/flake.nix"
 sudo sed -i "s/release-[0-9]\{2\}\.[0-9]\{2\}/release-$NIXOS_VERSION/g" "$REPO_PATH/flake.nix"
 sudo sed -i "s/system\.stateVersion = \"[0-9]\{2\}\.[0-9]\{2\}\"/system\.stateVersion = \"$NIXOS_VERSION\"/g" "$REPO_PATH/flake.nix"
+sudo sed -i "s/home\.stateVersion = \"[0-9]\{2\}\.[0-9]\{2\}\"/home\.stateVersion = \"$NIXOS_VERSION\"/g" "$REPO_PATH/users/${TARGET_USER}_home.nix"
 
-# Mise à jour du fichier home de l'utilisateur ciblé avec le numéro de version NixOS à installer
-if [ -f "$REPO_PATH/users/${TARGET_USER}_home.nix" ]; then
-    sudo sed -i "s/home\.stateVersion = \"[0-9]\{2\}\.[0-9]\{2\}\"/home\.stateVersion = \"$NIXOS_VERSION\"/g" "$REPO_PATH/users/${TARGET_USER}_home.nix"
-    echo -e "\e[32m[OK]\e[0m Configuration synchronisée sur la version $NIXOS_VERSION."
-else
-    echo -e "\e[31m[ATTENTION]\e[0m Fichier ${TARGET_USER}_home.nix introuvable, stateVersion non mise à jour."
-fi
+# A SUPRIMER DEFINITIVEMENT SI INSTALL VM OK
+# Injection de l'UUID LUKS2 dans le fichier .nix spécifique à la machine
+# sudo sed -i "s|by-uuid/[^\"]*|by-uuid/$REAL_UUID|g" "$REPO_PATH/hosts/$TARGET_HOSTNAME/tuning.nix"
 
 # Droits utilisateur sur $TARGET_MOUNT/home/$TARGET_USER et git du repo local
 sudo chown -R 1000:1000 "$TARGET_MOUNT/home/$TARGET_USER" # On donne les droits pour le futur système
@@ -213,10 +229,15 @@ sudo git add . # On utilise sudo pour les commandes git dans le script pour pass
 sudo chown -R 1000:1000 "$REPO_PATH" # On remet un petit coup de chown au cas où le dossier .git ait été créé en root
 
 
-# 8. INSTALLATION
+# 11. INSTALLATION
 echo "❄️  Déploiement du système...sudo nixos-install --flake $REPO_PATH#$TARGET_HOSTNAME"
 read -p "Confirmer ? (y/N) : " CONFIRM
 sudo nixos-install --flake $REPO_PATH#$TARGET_HOSTNAME
 
 echo "✅ Installation terminée avec succès !"
 echo "🚀 Vous pouvez redémarrer."
+
+echo "Point à verifier :"
+echo "- le numéro de version de NixOS dans $REPO_PATH/flake.nix"
+echo "- le numéro de version de NixOS dans $REPO_PATH/users/${TARGET_USER}_home.nix"
+echo "- l'UUID LUKS2 dans $REPO_PATH/hosts/$TARGET_HOSTNAME/tuning.nix"

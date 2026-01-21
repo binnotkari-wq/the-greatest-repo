@@ -115,20 +115,25 @@
 
   # --- TOOLBOX CLI ---
     environment.systemPackages = with pkgs; [
-    fzf
-    duf
-    mc # gestionnaire de fichiers en CLI
-    lynx # navigateur web en CLI
-    btop
-    htop
-    fastfetch
-    compsize
-    git
-    wget
-    powertop # gestion d'énèrgie https://commandmasters.com/commands/powertop-linux/
-    vtm # un desktop en CLI
-    zellij # un autre desktop en CLI
-    musikcube # lecteur de musique en CLI
+    # Logiciels CLI / TUI astucieux
+    fzf         # recherche de fichiers
+    mc          # gestionnaire de fichiers
+    lynx        # navigateur web
+    htop        # gestionnaire de processus
+    btop        # gestionnaire de processus, plus graphique
+    fastfetch   # affiche les caractéristiques du PC
+    duf         # analyse  espace disque
+    compsize    # analyse système de fichier btrfs : sudo compsize /nix
+    git         # interface de versionning
+    wget        # téléchargement de fichiers par http
+    powertop    # gestion d'énèrgie https://commandmasters.com/commands/powertop-linux/
+    vtm         # un desktop
+    zellij      # un autre desktop
+    musikcube   # lecteur de musique
+    mpv         # lecteur vidéo
+    pyradio     # webradio
+    mdcat       # afficheur de fichiers Markdown
+    slides      # lecteur de fichiers Markdown
   ];
 
 }

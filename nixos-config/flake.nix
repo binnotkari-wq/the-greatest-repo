@@ -31,6 +31,7 @@
           # 3. Tes modules de configuration système
           ./OS/core.nix
           ./OS/desktop_environment.nix
+          ./OS/special_apps.nix
           ./OS/gaming.nix
 
           # 4. Tes modules de configuration utilisateur + home manager
@@ -64,6 +65,7 @@
           # 3. Tes modules de configuration système
           ./OS/core.nix
           ./OS/desktop_environment.nix
+          # ./OS/special_apps.nix
           ./OS/SteamOS.nix
 
           # 4. Tes modules de configuration utilisateur + home manager
@@ -82,7 +84,7 @@
       };
 
 
-            # --- CONFIGURATION 3 : machine virtuelle ---
+      # --- CONFIGURATION 3 : machine virtuelle ---
       "vm" = nixpkgs.lib.nixosSystem {
         specialArgs = { inherit inputs; };
         modules = [
@@ -97,6 +99,7 @@
           # 3. Tes modules de configuration système
           ./OS/core.nix
           ./OS/desktop_environment.nix
+          # ./OS/special_apps.nix
           # ./OS/SteamOS.nix
 
           # 4. Tes modules de configuration utilisateur + home manager
@@ -111,6 +114,51 @@
             home-manager.extraSpecialArgs = { inherit inputs; };
             home-manager.users.benoit = import ./users/benoit_home.nix;
           }
+        ];
+      };
+
+
+      # --- CONFIGURATION 4 : ISO PERSONNALISÉE ---
+      "iso-auto" = nixpkgs.lib.nixosSystem {
+        specialArgs = { inherit inputs; };
+        modules = [
+          # Module de base pour l'ISO (choisis minimal ou graphical)
+          "${nixpkgs}/nixos/modules/installer/cd-dvd/installation-cd-graphical-plasma-6.nix"
+
+          # Importation de tes briques logicielles
+          ./OS/core.nix
+          ./OS/desktop_environment.nix
+          ./OS/special_apps.nix
+          ./OS/SteamOS.nix
+          ./hosts/dell-5485/tuning.nix
+          ./hosts/vm/tuning.nix
+          ./hosts/r5-3600/tuning.nix
+          ./users/benoit.nix # Pour avoir ton utilisateur et ses groupes
+
+          # Configuration spécifique à l'ISO
+          ({ lib, pkgs, ... }: {
+            # On force la désactivation des parties "disques physiques" qui feraient échouer l'ISO
+            boot.initrd.luks.devices = lib.mkForce {};
+            fileSystems = lib.mkForce {};
+
+
+          # Auto-login pour ne pas avoir à taper de mot de passe sur le Live USB
+          services.displayManager.autoLogin = {
+            enable = true;
+            user = "nixos"; # L'utilisateur par défaut de l'ISO
+          };
+
+          # Indispensable : inclure ton repo Git directement dans l'ISO
+          # pour que bootstrap.sh soit utilisable sans internet
+          system.activationScripts.copyMyConfig = ''
+            mkdir -p /home/nixos/nixos-config
+            cp -R ${self}/* /home/nixos/nixos-config/
+            chown -R nixos /home/nixos/nixos-config
+          '';
+
+          # On s'assure que les paquets sont bien mis en cache
+          isoImage.squashfsCompression = "zstd"; # Meilleur compromis taille/vitesse
+          })
         ];
       };
 

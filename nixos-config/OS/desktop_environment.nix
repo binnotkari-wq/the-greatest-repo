@@ -29,19 +29,11 @@
     kdePackages.ktorrent
     kdePackages.marble
     firefox # natif car pour une meilleure intégration système (KDE Connect, gestion des mots de passe, accélération matérielle). Le Flatpak peut parfois briser le sandboxing interne de Firefox.
-    kiwix
     qownnotes
-    llama-cpp-vulkan
-    librecad
     haruna
     keepassxc
     kstars
     pandoc
-    # krita
-    # org.virt_manager.virt_manager.Extension.Qemu org.virt_manager.virt-manager
-    # kdenlive
-    # heroic # C'est l'un des rares cas où le Flatpak est souvent recommandé par la communauté NixOS. Comme Heroic gère des jeux provenant de magasins qui ne supportent pas Linux nativement (Epic/GOG), l'isolation Flatpak fournit un environnement plus "standard" que les jeux Windows apprécient.:
-    # libreoffice # en flatpak car dépendances lourdes
   ];
 
 }

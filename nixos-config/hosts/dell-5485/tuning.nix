@@ -10,9 +10,8 @@
 
   # Gestion TDP APU (Ryzen 3500U)
   environment.systemPackages = with pkgs; [
-    ryzenadj
-    powertop # gestion d'énèrgie
-    nvtopPackages.amd
+    ryzenadj # Gestion TDP APU (Ryzen 3500U)
+    nvtopPackages.amd # nvtopPackages.nvidia" , nvtopPackages.intel
     radeontop
   ];
 

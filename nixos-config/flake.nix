@@ -98,32 +98,6 @@
         ];
       };
 
-      # VM (Gnome)
-      "vm-gnome" = nixpkgs.lib.nixosSystem {
-        specialArgs = { inherit inputs; };
-        modules = base-modules ++ [
-          ./hosts/vm-gnome/hardware-configuration.nix
-          ./OS/gnome_base.nix
-          ./OS/gnome_extended.nix
-          ./OS/SteamOS.nix
-          ./platform_specific/CPU_AMD.nix
-          ./platform_specific/CPU_intel.nix
-          ./platform_specific/GPU_AMD.nix
-          ./platform_specific/GPU_intel.nix
-          ./platform_specific/GPU_nivida.nix
-          ./platform_specific/qemu.nix
-          { networking.hostName = "vm-gnome"; }
-        ];
-      };
-
-      # Confi live cible pour générer un ISO d'installation avec l'ensemble des packages disponibles offline
-      "iso-auto" = nixpkgs.lib.nixosSystem {
-        specialArgs = { inherit inputs self nixpkgs; };
-        modules = [
-          ./iso.nix
-        ];
-      };
-
     };
   };
 }

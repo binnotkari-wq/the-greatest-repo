@@ -26,10 +26,11 @@
 
   swapDevices = [ { device = "/swap/swapfile"; } ];
 
-  boot.initrd.luks.devices."cryptroot" = {
-    allowDiscards = true; # autorises le TRIM à traverser LUKS
-    bypassWorkqueues = true; # Améliore la performance sur les SSD NVMe
-  };
+  # Optimisations LUKS (appliquées uniquement si cryptroot est défini dans hardware-configuration.nix)
+  # boot.initrd.luks.devices."cryptroot" = {
+  #   allowDiscards = true;
+  #   bypassWorkqueues = true;
+  # };
 
 
   # --- ACTIVATION DU SWAP EN RAM COMPRESSEE (sera utilisé en priorité avant le swap sur disque) ---

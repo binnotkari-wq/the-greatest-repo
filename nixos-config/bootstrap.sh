@@ -193,13 +193,7 @@ sudo swapon $TARGET_MOUNT/swap/swapfile
 
 # 9. GÉNÉRATION DU MATÉRIEL
 echo "🔍 Détection des composants matériels...sauf les sytèmes de fichier, qui vont être gérés par un .nix distinct"
-# sudo nixos-generate-config --root $TARGET_MOUNT --no-filesystems # A SUPRIMER DEFINITIVEMENT SI INSTALL VM OK
 sudo nixos-generate-config --root $TARGET_MOUNT
-
-# A SUPRIMER DEFINITIVEMENT SI INSTALL VM OK
-# 10. CAPTURE DE L'UUID LUKS2 ---
-# echo "🆔 Récupération de l'UUID LUKS..."
-# REAL_UUID=$(blkid -s UUID -o value "$PART_LUKS")
 
 
 # 10. PRÉPARATION DU HOME & REPO
@@ -210,16 +204,11 @@ sudo cp -ra . $REPO_PATH # on copie tout le contenu du dossier ou se trouve le s
 sudo cp $TARGET_MOUNT/etc/nixos/hardware-configuration.nix $REPO_PATH/hosts/$TARGET_HOSTNAME/hardware-configuration.nix ## Copier le fichier fraîchement généré vers ton dossier Git
 echo "Fichiers .nix mis en place dans $REPO_PATH/"
 
-
 # Mise à jour du flake.nix avec le numéro de version NixOS à installer
 sudo sed -i "s/nixos-[0-9]\{2\}\.[0-9]\{2\}/nixos-$NIXOS_VERSION/g" "$REPO_PATH/flake.nix"
 sudo sed -i "s/release-[0-9]\{2\}\.[0-9]\{2\}/release-$NIXOS_VERSION/g" "$REPO_PATH/flake.nix"
 sudo sed -i "s/system\.stateVersion = \"[0-9]\{2\}\.[0-9]\{2\}\"/system\.stateVersion = \"$NIXOS_VERSION\"/g" "$REPO_PATH/flake.nix"
-sudo sed -i "s/home\.stateVersion = \"[0-9]\{2\}\.[0-9]\{2\}\"/home\.stateVersion = \"$NIXOS_VERSION\"/g" "$REPO_PATH/users/${TARGET_USER}_home.nix"
-
-# A SUPRIMER DEFINITIVEMENT SI INSTALL VM OK
-# Injection de l'UUID LUKS2 dans le fichier .nix spécifique à la machine
-# sudo sed -i "s|by-uuid/[^\"]*|by-uuid/$REAL_UUID|g" "$REPO_PATH/hosts/$TARGET_HOSTNAME/tuning.nix"
+sudo sed -i "s/home\.stateVersion = \"[0-9]\{2\}\.[0-9]\{2\}\"/home\.stateVersion = \"$NIXOS_VERSION\"/g" "$REPO_PATH/flake.nix"
 
 # Droits utilisateur sur $TARGET_MOUNT/home/$TARGET_USER et git du repo local
 sudo chown -R 1000:1000 "$TARGET_MOUNT/home/$TARGET_USER" # On donne les droits pour le futur système

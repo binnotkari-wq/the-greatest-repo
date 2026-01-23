@@ -68,8 +68,7 @@
         ];
       };
 
-
-            # Lenovo Thinkpad x240 (mobile)
+      # Lenovo Thinkpad x240 (mobile)
       "len-x240" = nixpkgs.lib.nixosSystem {
         specialArgs = { inherit inputs; };
         modules = base-modules ++ [
@@ -80,7 +79,6 @@
           { networking.hostName = "len-x240"; }
         ];
       };
-
 
       # VM (Plasma)
       "vm" = nixpkgs.lib.nixosSystem {
@@ -100,8 +98,7 @@
         ];
       };
 
-
-            # VM (Gnome)
+      # VM (Gnome)
       "vm-gnome" = nixpkgs.lib.nixosSystem {
         specialArgs = { inherit inputs; };
         modules = base-modules ++ [

@@ -4,164 +4,128 @@
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-25.11";
     impermanence.url = "github:nix-community/impermanence";
-
     home-manager = {
-      url = "github:nix-community/home-manager/release-25.11"; # Utilise la branche matching nixpkgs
+      url = "github:nix-community/home-manager/release-25.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-
   };
 
-  outputs = { self, nixpkgs, impermanence, home-manager, ... }@inputs: {
+  outputs = { self, nixpkgs, impermanence, home-manager, ... }@inputs:
+  let
+    # --- SOCLE TECHNIQUE ---
+    base-modules = [
+      # 1. Activation des modules externes communs
+      impermanence.nixosModules.impermanence
+      home-manager.nixosModules.home-manager
+      # 2. Configuration commune à toutes les machines
+      ./OS/core.nix
+      ./users/benoit.nix
+      # 3. Configuration commune à tous les profils Home Manager
+      {
+        system.stateVersion = "25.11";
+        home-manager.useGlobalPkgs = true;
+        home-manager.useUserPackages = true;
+        home-manager.extraSpecialArgs = { inherit inputs; };
+        home-manager.users.benoit = import ./users/benoit_home.nix;
+        home-manager.sharedModules = [
+          {
+            home.username = "benoit";
+            home.homeDirectory = "/home/benoit";
+            home.stateVersion = "25.11";
+            programs.home-manager.enable = true;
+          }
+        ];
+      }
+    ];
+
+  in {
     nixosConfigurations = {
 
-
-      # --- CONFIGURATION 1 : DELL 5485 ---
+      # DELL 5485 (portable principal)
       "dell-5485" = nixpkgs.lib.nixosSystem {
         specialArgs = { inherit inputs; };
-        modules = [
-          # 1. Activation des modules externes
-          impermanence.nixosModules.impermanence
-          home-manager.nixosModules.home-manager
-
-          # 2. Le matériel
-          ./hosts/dell-5485/hardware-configuration.nix # celui généré par bootstrap.sh
-          ./hosts/dell-5485/tuning.nix
-
-          # 3. Tes modules de configuration système
-          ./OS/core.nix
-          ./OS/desktop_environment.nix
-          ./OS/special_apps.nix
+        modules = base-modules ++ [
+          ./hosts/dell-5485/hardware-configuration.nix
+          ./platform_specific/CPU_AMD.nix
+          ./platform_specific/APU_AMD.nix
+          ./OS/plasma_base.nix
+          ./OS/plasma_extended.nix
           ./OS/SteamOS.nix
-
-          # 4. Tes modules de configuration utilisateur + home manager
-          ./users/benoit.nix
-
-          # 5. Configuration directe (anciennement configuration.nix)
-          {
-            system.stateVersion = "25.11";
-            networking.hostName = "dell-5485";
-            home-manager.useGlobalPkgs = true;
-            home-manager.useUserPackages = true;
-            home-manager.extraSpecialArgs = { inherit inputs; };
-            home-manager.users.benoit = import ./users/benoit_home.nix;
-          }
+          { networking.hostName = "dell-5485"; }
         ];
       };
 
-
-      # --- CONFIGURATION 2 : Ryzen 5 3600 ---
+      # RYZEN 5 3600 (Fixe / Gaming)
       "r5-3600" = nixpkgs.lib.nixosSystem {
         specialArgs = { inherit inputs; };
-        modules = [
-          # 1. Activation des modules externes
-          impermanence.nixosModules.impermanence
-          home-manager.nixosModules.home-manager
-
-          # 2. Le matériel
-          ./hosts/r5-3600/hardware-configuration.nix # celui généré par bootstrap.sh
-          ./hosts/r5-3600/tuning.nix
-
-          # 3. Tes modules de configuration système
-          ./OS/core.nix
-          ./OS/desktop_environment.nix
-          # ./OS/special_apps.nix
+        modules = base-modules ++ [
+          ./hosts/r5-3600/hardware-configuration.nix
+          ./platform_specific/CPU_AMD.nix
+          ./platform_specific/GPU_AMD.nix
+          ./OS/plasma_base.nix
           ./OS/SteamOS.nix
-
-          # 4. Tes modules de configuration utilisateur + home manager
-          ./users/benoit.nix
-
-          # 5. Configuration directe (anciennement configuration.nix)
-          {
-            system.stateVersion = "25.11";
-            networking.hostName = "r5-3600";
-            home-manager.useGlobalPkgs = true;
-            home-manager.useUserPackages = true;
-            home-manager.extraSpecialArgs = { inherit inputs; };
-            home-manager.users.benoit = import ./users/benoit_home.nix;
-          }
+          { networking.hostName = "r5-3600"; }
         ];
       };
 
 
-      # --- CONFIGURATION 3 : machine virtuelle ---
+            # Lenovo Thinkpad x240 (mobile)
+      "len-x240" = nixpkgs.lib.nixosSystem {
+        specialArgs = { inherit inputs; };
+        modules = base-modules ++ [
+          ./hosts/len-x240/hardware-configuration.nix
+          ./platform_specific/CPU_intel.nix
+          ./platform_specific/GPU_intel.nix
+          ./OS/plasma_base.nix
+          { networking.hostName = "len-x240"; }
+        ];
+      };
+
+
+      # VM (Plasma)
       "vm" = nixpkgs.lib.nixosSystem {
         specialArgs = { inherit inputs; };
-        modules = [
-          # 1. Activation des modules externes
-          impermanence.nixosModules.impermanence
-          home-manager.nixosModules.home-manager
-
-          # 2. Le matériel
-          ./hosts/vm/hardware-configuration.nix # celui généré par bootstrap.sh
-          ./hosts/vm/tuning.nix
-
-          # 3. Tes modules de configuration système
-          ./OS/core.nix
-          ./OS/desktop_environment.nix
-          # ./OS/special_apps.nix
-          # ./OS/SteamOS.nix
-
-          # 4. Tes modules de configuration utilisateur + home manager
-          ./users/benoit.nix
-
-          # 5. Configuration directe (anciennement configuration.nix)
-          {
-            system.stateVersion = "25.11";
-            networking.hostName = "vm";
-            home-manager.useGlobalPkgs = true;
-            home-manager.useUserPackages = true;
-            home-manager.extraSpecialArgs = { inherit inputs; };
-            home-manager.users.benoit = import ./users/benoit_home.nix;
-          }
-        ];
-      };
-
-
-      # --- CONFIGURATION 4 : ISO PERSONNALISÉE ---
-      "iso-auto" = nixpkgs.lib.nixosSystem {
-        specialArgs = { inherit inputs; };
-        modules = [
-          # Module de base pour l'ISO (choisis minimal ou graphical)
-          "${nixpkgs}/nixos/modules/installer/cd-dvd/installation-cd-graphical-plasma-6.nix"
-
-          # Importation de tes briques logicielles
-          ./OS/core.nix
-          ./OS/desktop_environment.nix
-          ./OS/special_apps.nix
+        modules = base-modules ++ [
+          ./hosts/vm/hardware-configuration.nix
+          ./OS/plasma_base.nix
+          ./OS/plasma_extended.nix
           ./OS/SteamOS.nix
-          ./hosts/dell-5485/tuning.nix
-          ./hosts/vm/tuning.nix
-          ./hosts/r5-3600/tuning.nix
-          ./users/benoit.nix # Pour avoir ton utilisateur et ses groupes
-
-          # Configuration spécifique à l'ISO
-          ({ lib, pkgs, ... }: {
-            # On force la désactivation des parties "disques physiques" qui feraient échouer l'ISO
-            boot.initrd.luks.devices = lib.mkForce {};
-            fileSystems = lib.mkForce {};
-
-
-          # Auto-login pour ne pas avoir à taper de mot de passe sur le Live USB
-          services.displayManager.autoLogin = {
-            enable = true;
-            user = "nixos"; # L'utilisateur par défaut de l'ISO
-          };
-
-          # Indispensable : inclure ton repo Git directement dans l'ISO
-          # pour que bootstrap.sh soit utilisable sans internet
-          system.activationScripts.copyMyConfig = ''
-            mkdir -p /home/nixos/nixos-config
-            cp -R ${self}/* /home/nixos/nixos-config/
-            chown -R nixos /home/nixos/nixos-config
-          '';
-
-          # On s'assure que les paquets sont bien mis en cache
-          isoImage.squashfsCompression = "zstd"; # Meilleur compromis taille/vitesse
-          })
+          ./platform_specific/CPU_AMD.nix
+          ./platform_specific/CPU_intel.nix
+          ./platform_specific/GPU_AMD.nix
+          ./platform_specific/GPU_intel.nix
+          ./platform_specific/GPU_nivida.nix
+          ./platform_specific/qemu.nix
+          { networking.hostName = "vm"; }
         ];
       };
 
+
+            # VM (Gnome)
+      "vm-gnome" = nixpkgs.lib.nixosSystem {
+        specialArgs = { inherit inputs; };
+        modules = base-modules ++ [
+          ./hosts/vm-gnome/hardware-configuration.nix
+          ./OS/gnome_base.nix
+          ./OS/gnome_extended.nix
+          ./OS/SteamOS.nix
+          ./platform_specific/CPU_AMD.nix
+          ./platform_specific/CPU_intel.nix
+          ./platform_specific/GPU_AMD.nix
+          ./platform_specific/GPU_intel.nix
+          ./platform_specific/GPU_nivida.nix
+          ./platform_specific/qemu.nix
+          { networking.hostName = "vm-gnome"; }
+        ];
+      };
+
+      # Confi live cible pour générer un ISO d'installation avec l'ensemble des packages disponibles offline
+      "iso-auto" = nixpkgs.lib.nixosSystem {
+        specialArgs = { inherit inputs self nixpkgs; };
+        modules = [
+          ./iso.nix
+        ];
+      };
 
     };
   };

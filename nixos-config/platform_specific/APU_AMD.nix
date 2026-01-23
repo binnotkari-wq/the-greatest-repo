@@ -13,6 +13,7 @@
     ryzenadj # Gestion TDP APU (Ryzen 3500U)
     nvtopPackages.amd # nvtopPackages.nvidia" , nvtopPackages.intel
     radeontop
+    libva-vdpau-driver
   ];
 
   # Alias pour le confort

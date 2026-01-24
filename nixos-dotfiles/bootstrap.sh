@@ -14,28 +14,28 @@ echo -e "\e[36m============================================\e[0m"
 DEFAULT_DISK="nvme0n1"
 
 while true; do
-    echo -ne "\nChoix du disque cible [\e[33m$DEFAULT_DISK\e[0m] : "
-    read DISK
-    DISK=${DISK:-$DEFAULT_DISK}
+    echo -ne "\nChoix du disque cible [\e[33m$DEFAULT_DISK\e[0m] : "
+    read DISK
+    DISK=${DISK:-$DEFAULT_DISK}
 
-    # Vérification : est-ce que le disque existe dans /dev/ ?
-    if [ -b "/dev/$DISK" ]; then
-        echo -e "\e[32m[OK]\e[0m Le disque /dev/$DISK est valide."
+    # Vérification : est-ce que le disque existe dans /dev/ ?
+    if [ -b "/dev/$DISK" ]; then
+        echo -e "\e[32m[OK]\e[0m Le disque /dev/$DISK est valide."
 
-        # Double confirmation visuelle car c'est une opération destructive
-        echo -e "\n\e[31m[ATTENTION]\e[0m TOUTES LES DONNÉES SUR /dev/$DISK VONT ÊTRE EFFACÉES."
-        echo -ne "Confirmez le nom du disque pour continuer : "
-        read CONFIRM_DISK
+        # Double confirmation visuelle car c'est une opération destructive
+        echo -e "\n\e[31m[ATTENTION]\e[0m TOUTES LES DONNÉES SUR /dev/$DISK VONT ÊTRE EFFACÉES."
+        echo -ne "Confirmez le nom du disque pour continuer : "
+        read CONFIRM_DISK
 
-        if [ "$DISK" == "$CONFIRM_DISK" ]; then
-            echo -e "\e[32m[CONFIRMÉ]\e[0m Disque /dev/$DISK séléctionné..."
-            break
-        else
-            echo -e "\e[31m[ERREUR]\e[0m La confirmation ne correspond pas. On recommence."
-        fi
-    else
-        echo -e "\e[31m[ERREUR]\e[0m Le périphérique /dev/$DISK n'existe pas. Vérifiez le nom (ex: sda, nvme0n1)."
-    fi
+        if [ "$DISK" == "$CONFIRM_DISK" ]; then
+            echo -e "\e[32m[CONFIRMÉ]\e[0m Disque /dev/$DISK séléctionné..."
+            break
+        else
+            echo -e "\e[31m[ERREUR]\e[0m La confirmation ne correspond pas. On recommence."
+        fi
+    else
+        echo -e "\e[31m[ERREUR]\e[0m Le périphérique /dev/$DISK n'existe pas. Vérifiez le nom (ex: sda, nvme0n1)."
+    fi
 done
 
 
@@ -46,16 +46,16 @@ grep -oP '(?<=")[^"]+(?=" = nixpkgs.lib.nixosSystem)' flake.nix
 echo -e "\e[36m==========================================================\e[0m"
 
 while true; do
-    echo -ne "\nEntrez le nom exact de la machine à installer (ex: dell-5485) : "
-    read TARGET_HOSTNAME
+    echo -ne "\nEntrez le nom exact de la machine à installer (ex: dell-5485) : "
+    read TARGET_HOSTNAME
 
-    # Vérification si le nom saisi existe bien dans le flake.nix
-    if grep -q "\"$TARGET_HOSTNAME\" = nixpkgs.lib.nixosSystem" flake.nix; then
-        echo -e "\e[32m[OK]\e[0m Configuration '$TARGET_HOSTNAME' validée."
-        break
-    else
-        echo -e "\e[31m[ERREUR]\e[0m La machine '$TARGET_HOSTNAME' n'existe pas dans le flake.nix. Réessayez."
-    fi
+    # Vérification si le nom saisi existe bien dans le flake.nix
+    if grep -q "\"$TARGET_HOSTNAME\" = nixpkgs.lib.nixosSystem" flake.nix; then
+        echo -e "\e[32m[OK]\e[0m Configuration '$TARGET_HOSTNAME' validée."
+        break
+    else
+        echo -e "\e[31m[ERREUR]\e[0m La machine '$TARGET_HOSTNAME' n'existe pas dans le flake.nix. Réessayez."
+    fi
 done
 
 
@@ -69,34 +69,34 @@ DOTFILES_PATH="$TARGET_MOUNT/home/$TARGET_USER/Mes-Donnees/the-greatest-repo/nix
 echo ""
 echo -e "\e[36m==========================================================\e[0m"
 echo "RÉCAPITULATIF DE L'INSTALLATION :"
-echo "  - Machine : $TARGET_HOSTNAME"
-echo "  - Utilisateur : $TARGET_USER"
-echo "  - Disque : /dev/$DISK"
+echo "  - Machine : $TARGET_HOSTNAME"
+echo "  - Utilisateur : $TARGET_USER"
+echo "  - Disque : /dev/$DISK"
 echo -e "\e[36m==========================================================\e[0m"
 echo -e "\n\e[31m[ATTENTION]\e[0m TOUTES LES DONNÉES SUR /dev/$DISK VONT ÊTRE EFFACÉES."
 read -p "Confirmer l'effacement et lancer l'installation ? (y/N) : " CONFIRM
 
 if [[ $CONFIRM != "y" && $CONFIRM != "Y" ]]; then
-    echo "❌ Installation annulée."
-    exit 1
+    echo "❌ Installation annulée."
+    exit 1
 fi
 # --- DEBUT DE LA DEFINITION DES VARIABLES ---
 
 
 # --- DÉBUT DU SCRIPT DE PARTITIONNEMENT ---
 # 1. TABLE DE PARTITIONS
-echo "🏗️  Création de la table de partition GPT..."
+echo "🏗️  Création de la table de partition GPT..."
 sudo sgdisk --zap-all /dev/$DISK
-sudo sgdisk -n 1:0:+512M -t 1:ef00 -c 1:"BOOT" /dev/$DISK   # EFI
-sudo sgdisk -n 2:0:0      -t 2:8300 -c 2:"SYSTEM" /dev/$DISK # LUKS + BTRFS
+sudo sgdisk -n 1:0:+512M -t 1:ef00 -c 1:"BOOT" /dev/$DISK   # EFI
+sudo sgdisk -n 2:0:0      -t 2:8300 -c 2:"SYSTEM" /dev/$DISK # LUKS + BTRFS
 
 # Gestion intelligente des noms de partitions (nvme vs autres)
 if [[ $DISK == *"nvme"* || $DISK == *"mmcblk"* ]]; then
-    PART_BOOT="/dev/${DISK}p1"
-    PART_LUKS="/dev/${DISK}p2"
+    PART_BOOT="/dev/${DISK}p1"
+    PART_LUKS="/dev/${DISK}p2"
 else
-    PART_BOOT="/dev/${DISK}1"
-    PART_LUKS="/dev/${DISK}2"
+    PART_BOOT="/dev/${DISK}1"
+    PART_LUKS="/dev/${DISK}2"
 fi
 
 # 2. CHIFFREMENT LUKS2
@@ -142,7 +142,6 @@ sudo swapon $TARGET_MOUNT/swap/swapfile
 
 
 
-
 # 9. GÉNÉRATION DU MATÉRIEL
 echo "🔍 Détection des composants matériels...sauf les sytèmes de fichier, qui vont être gérés par un .nix distinct"
 sudo nixos-generate-config --root $TARGET_MOUNT
@@ -166,7 +165,7 @@ sudo chown -R 1000:1000 "$DOTFILES_PATH" # On remet un petit coup de chown au ca
 
 
 # 11. INSTALLATION
-echo "❄️  Déploiement du système...sudo nixos-install --flake $DOTFILES_PATH#$TARGET_HOSTNAME"
+echo "❄️  Déploiement du système...sudo nixos-install --flake $DOTFILES_PATH#$TARGET_HOSTNAME"
 read -p "Confirmer ? (y/N) : " CONFIRM
 sudo nixos-install --flake $DOTFILES_PATH#$TARGET_HOSTNAME
 

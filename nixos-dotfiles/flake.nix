@@ -82,7 +82,7 @@
         modules = base-modules ++ [
           ./hosts/vm/hardware-configuration.nix
           ./OS/plasma_base.nix
-          ./OS/CLI_tools.nix
+          # ./OS/CLI_tools.nix
           ./platform_specific/qemu.nix
           { networking.hostName = "vm"; }
         ];

@@ -10,11 +10,11 @@ Commandes usuelles
 - sudo nix-collect-garbage # supprimer les fichiers correspondants du store
 
 === Mettre à jour ===
-- cd ~/Mes-Donnees/Git/nixos-config && nix flake update # update système
+- cd ~/Mes-Donnees/the-greatest-repo/nixos-dotfiles && nix flake update # update système
 - flatpak update -y # mise à jour flatpaks
 - cd ~/Mes-Donnees/Git/ && git init && git add . && git commit -m "description du commit" && git pull origin main && git push origin main # synchroniser le depot git des .nix
 
-=== Rebuild (à executer dans ~/Mes-Donnees/Git/nixos-config)
+=== Rebuild (à executer dans ~/Mes-Donnees/the-greatest-repo/nixos-dotfiles)
 - sudo nixos-rebuild test --flake .#dell_5485 # rebuild simple d'une nouvelle génération
 - sudo nixos-rebuild boot --flake .#dell_5485 # générer une nouvelle entrée de boot, suite au rebuild test
 - sudo nixos-rebuild switch --flake .#dell_5485 # rebuild et bascule en live sur la nouvelle génération, et génère une nouvelle entrée de boot

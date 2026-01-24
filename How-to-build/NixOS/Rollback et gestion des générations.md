@@ -41,7 +41,7 @@ Nettoyer les .nix pour qu'ils correspondent vraiment à la config souhaitée, et
 4. Rebuilder
 
 ```bash
-cd ~/nixos-config
+cd ~/Mes-Donnees/the-greatest-repo/nixos-dotfiles
 sudo nixos-rebuild switch --flake .#dell_5485
 reboot
 
@@ -50,7 +50,7 @@ reboot
 5. Faire un commit des fichiers .nix
 
 ```bash
-cd ~/nixos-config
+cd ~/Mes-Donnees/the-greatest-repo/nixos-dotfiles
 git add .
 git commit -m "retour à config propre, abandon modifs gaming"
 git push
@@ -81,6 +81,6 @@ sudo nix-collect-garbage
 Refaire une génération pour mettre à jour le bootloader :
 
 ```bash
-cd ~/nixos-config
+cd ~/Mes-Donnees/the-greatest-repo/nixos-dotfiles
 sudo nixos-rebuild switch --flake .#dell_5485
 ```

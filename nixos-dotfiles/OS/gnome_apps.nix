@@ -2,7 +2,21 @@
 
 {
   environment.systemPackages = with pkgs; [
-    kodi-wayland
+    gnome-tweaks                 # paramètres Gnome supplémentaires
+    gnome-extension-manager      # Très pratique pour gérer les extensions sans passer par le navigateur
+    firefox                      # natif car pour une meilleure intégration système (KDE Connect, gestion des mots de passe, accélération matérielle). Le Flatpak peut parfois briser le sandboxing interne de Firefox.
+    fragments                    # Équivalent de KTorrent (Client BitTorrent GTK)
+    pika-backup                  # Pour les sauvegardes, s'intègre parfaitement
+    loupe                        # Visionneuse d'images moderne
+    gnome-secrets                # gestionnaire de mots de passe compatible keepass
+    meld                         # comparateurs de fichiers et dossiers
+    zim                          # prise de notes et bobliothèque Markdown
+    apostrophe                   # editeur / visualiseur avancé de Markdown
+    foliate                      # lecteur ebook
+    drawing                      # petit programme de dessin, identique à Paint
+    lollypop                     # lecteur de musique
+    celluloid                    # lecteur de vidéos
+    kodi-wayland                 # plateforme multimedia
     pandoc                       # infrasctructure d'interprétation de fichiers textes et conversions
     kiwix                        # Interpréteur de fichiers wikimedia offline
     llama-cpp-vulkan             # moteur LLM pour IA local, avec interface web type Gemini / Chat GPT

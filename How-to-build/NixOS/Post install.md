@@ -45,6 +45,8 @@ echo 'export FLATPAK_DOWNLOAD_TMPDIR="$HOME/.flatpak-tmp"' >> ~/.bashrc
 ```
 
 Et créer le dossier en question :
+Token de github :
+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
 ```bash
 mkdir -p ~/.flatpak-tmp
 ```
@@ -60,22 +62,24 @@ flatpak install --user flathub
 ### Git
 
 Crée ton dossier :
-mkdir ~/nixos-config.
+mkdir ~/Mes-Donnees/the-greatest-repo/nixos-dotfiles
 
 Déplace les fichiers :
-sudo mv /etc/nixos/* ~/nixos-config/.
+Token de github :
+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
+sudo mv /etc/nixos/* ~/Mes-Donnees/the-greatest-repo/nixos-dotfiles
 
 Change les droits :
-sudo chown -R $USER:users ~/nixos-config.
+sudo chown -R $USER:users ~/Mes-Donnees/the-greatest-repo/nixos-dotfiles
 
-cd ~/nixos-config
+cd ~/Mes-Donnees/the-greatest-repo/nixos-dotfiles
 
 git config --global user.email "benoit.dorczynski@gmail.com"
 git config --global user.name "binnotkari-wq"
 
 
 Ajoute l'adresse de ton dépôt GitHub
-git remote add origin https://github.com/binnotkari-wq/nixos-config.git
+git remote add origin https://github.com/binnotkari-wq.git
 
 Renomme la branche principale en 'main' (standard moderne)
 git branch -M main
@@ -88,12 +92,9 @@ git push -u origin main
     - Password : Colle ici le Token que tu viens de copier. (Note : Rien ne s'affichera quand tu colles, c'est normal pour la sécurité. Colle et appuie sur Entrée).
 
 
-Token de github :
-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
-
 
 Et si on reinstalle un nouveau PC, ou sur le meme pc :
-sudo nixos-rebuild switch --flake github:TonPseudo/nixos-config#nom_du_pc
+sudo nixos-rebuild switch --flake github:TonPseudo/Mes-Donnees/the-greatest-repo/nixos-dotfiles#nom_du_pc
 
 
 

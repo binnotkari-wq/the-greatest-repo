@@ -48,6 +48,6 @@ sudo rm -f /mnt/etc/nixos/flake.lock
 # inutile quand le hash du password est deja dans users.nix (ce qui permet l'impersistance)
 
 # Rebooter.
-# Ensuite après reboot, rapatrier les .nix dans /home/benoit/nixos-config/ et les supprimer de /etc/nixos/
+# Ensuite après reboot, rapatrier les .nix dans /home/benoit/Mes-Donnees/the-greatest-repo/nixos-dotfiles/ et les supprimer de /etc/nixos/
 # Il y aura de toute façon une phase post install pour synchoriser github, installer les flatpaks.
 ```

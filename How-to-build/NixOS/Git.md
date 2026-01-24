@@ -1,6 +1,8 @@
 Git
 ===
 
+## Créer un repo
+
 Dans github, créer un repository, le nommer, et noter son adresse.
 Sur le PC, aller dans le répertoire qui servira de dépot.
 
@@ -41,6 +43,13 @@ Ou, plus efficace en un seul copié-collé :
 - cd ~/Mes-Donnees/Git/ && git init && git add . && git commit -m "description du commit" && git pull origin main && git push origin main # synchroniser le depot git des .nix
 ```
 
+
+## Rapatrier un repo
+
+Dans le dossier oùon veut rapatrier un repo :
+```bash
+git clone https://github.com/binnotkari-wq/the-greatest-repo.git
+```
 
 Si demandé
     - Username : binnotkari-wq

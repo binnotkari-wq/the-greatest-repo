@@ -132,7 +132,7 @@ Grâce à ta structure lsblk, voici ce qui va se passer au reboot :
 
     /nix : Est sur un sous-volume à part. Il ne bouge pas. Tes logiciels et ta persistance restent là.
 
-    /home : Est sur un sous-volume à part. Tes documents, ton bureau et ton nixos-config sont sauvés.
+    /home : Est sur un sous-volume à part. Tes documents, ton bureau et ton nixos-dotfiles sont sauvés.
 
     /var : Est sur un sous-volume à part. Tes logs et bases de données restent là.
 

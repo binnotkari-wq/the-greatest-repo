@@ -16,10 +16,10 @@ Fichier completement inutilisé, ne servait pas vraiment à quelque chose
       # echo "🚀 Début de la mise à jour globale..."
 
       # 1. Mise à jour des dépôts (Flake)
-      # cd ~/nixos-config && nix flake update
+      # cd ~/Mes-Donnees/the-greatest-repo/nixos-dotfiles && nix flake update
 
       # 2. Application de la configuration NixOS
-      # sudo nixos-rebuild switch --flake ~/nixos-config#dell_5485
+      # sudo nixos-rebuild switch --flake ~/Mes-Donnees/the-greatest-repo/nixos-dotfiles#dell_5485
 
       # 3. Mise à jour des Flatpaks
       # if command -v flatpak > /dev/null; then

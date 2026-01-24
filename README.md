@@ -6,7 +6,7 @@ Dépot pour geeker :)
 
 Fiches des experimentation des differents builds
 
-## Nixos-config
+## nixos-dotfiles
 
 Dépôt de configuration NixOS. Ce système est conçu pour être reproductible, propre et performant, avec une gestion modulaire des machines. Système basé sur flakes et home manager, 100% stateless
 
@@ -46,7 +46,7 @@ Depuis un Live USB NixOS, se connecter à internet et dans le terminal :
 
 ```bash
 git clone https://github.com/binnotkari-wq/the-greatest-repo.git
-cd nixos-config
+cd the-greatest-repo/nixos-dotfiles/
 chmod +x bootstrap.sh
 ./bootstrap.sh
 ```

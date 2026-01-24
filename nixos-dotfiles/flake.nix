@@ -3,36 +3,32 @@
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-25.11";
+    home-manager.url = "github:nix-community/home-manager/release-25.11";
+    home-manager.inputs.nixpkgs.follows = "nixpkgs";
     impermanence.url = "github:nix-community/impermanence";
-    home-manager = {
-      url = "github:nix-community/home-manager/release-25.11";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
   };
 
   outputs = { self, nixpkgs, impermanence, home-manager, ... }@inputs:
   let
+    user_name = "benoit";
+    current_stable_version = "25.11";
+
     # --- SOCLE TECHNIQUE ---
     base-modules = [
-      # 1. Activation des modules externes communs
       impermanence.nixosModules.impermanence
       home-manager.nixosModules.home-manager
       # 2. Configuration commune à toutes les machines
       ./OS/core.nix
-      ./users/benoit.nix
-      # 3. Configuration commune à tous les profils Home Manager
+      ./users/${user_name}.nix
       {
-        system.stateVersion = "25.11";
-        home-manager.useGlobalPkgs = true;
-        home-manager.useUserPackages = true;
+        system.stateVersion = current_stable_version;
         home-manager.extraSpecialArgs = { inherit inputs; };
-        home-manager.users.benoit = import ./users/benoit_home.nix;
+        home-manager.users."${user_name}" = import ./users/${user_name}_home.nix;
         home-manager.sharedModules = [
           {
-            home.username = "benoit";
-            home.homeDirectory = "/home/benoit";
-            home.stateVersion = "25.11";
-            programs.home-manager.enable = true;
+            home.username = user_name;
+            home.homeDirectory = "/home/${user_name}";
+            home.stateVersion = current_stable_version;
           }
         ];
       }
@@ -49,7 +45,7 @@
           ./platform_specific/CPU_AMD.nix
           ./platform_specific/APU_AMD.nix
           ./OS/plasma_base.nix
-          ./OS/plasma_extended.nix
+          ./OS/plasma_apps.nix
           ./OS/SteamOS.nix
           { networking.hostName = "dell-5485"; }
         ];
@@ -80,19 +76,13 @@
         ];
       };
 
-      # VM (Plasma)
+      # VM
       "vm" = nixpkgs.lib.nixosSystem {
         specialArgs = { inherit inputs; };
         modules = base-modules ++ [
           ./hosts/vm/hardware-configuration.nix
           ./OS/plasma_base.nix
-          ./OS/plasma_extended.nix
-          ./OS/SteamOS.nix
-          ./platform_specific/CPU_AMD.nix
-          ./platform_specific/CPU_intel.nix
-          ./platform_specific/GPU_AMD.nix
-          ./platform_specific/GPU_intel.nix
-          ./platform_specific/GPU_nivida.nix
+          ./OS/CLI_tools.nix
           ./platform_specific/qemu.nix
           { networking.hostName = "vm"; }
         ];

@@ -42,6 +42,7 @@ case $choice in
 		rsync -avh --delete --backup --backup-dir="$DEPRECATED_DIR" "$HOME_DIR/$USER_DIR/03_Ressources_Externes/Utilisation du système/" "$SAVE_DIR/$USER_DIR/03_Ressources_Externes/Utilisation du système" | tee -a "$LOG_FILE" &&
 		rsync -avh --delete --backup --backup-dir="$DEPRECATED_DIR" "$HOME_DIR/$USER_DIR/03_Ressources_Externes/Musique/00 vrac/" "$SAVE_DIR/$USER_DIR/03_Ressources_Externes/Musique/00 vrac" | tee -a "$LOG_FILE" &&
 		rsync -avh --delete --backup --backup-dir="$DEPRECATED_DIR" "$HOME_DIR/$USER_DIR/05_En_Cours/" "$SAVE_DIR/$USER_DIR/05_En_Cours" | tee -a "$LOG_FILE" &&
+		rsync -avh --delete --backup --backup-dir="$DEPRECATED_DIR" "$HOME_DIR/$USER_DIR/Git/" "$SAVE_DIR/$USER_DIR/Git" | tee -a "$LOG_FILE" &&
 		rsync -avh --delete --backup --backup-dir="$DEPRECATED_DIR" "$HOME_DIR/$USER_DIR/99_Technique/" "$SAVE_DIR/$USER_DIR/99_Technique" | tee -a "$LOG_FILE" &&
 		echo "" | tee -a "$LOG_FILE" &&
 		echo "✅ Sauvegarde effectuée le $(date)" | tee -a "$LOG_FILE";;

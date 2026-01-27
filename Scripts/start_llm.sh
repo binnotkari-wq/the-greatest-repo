@@ -21,13 +21,13 @@ fi
 
 # 3. Configurer les variables selon le choix
 if [ "$CHOIX" == "G" ]; then
-    MODEL_PATH="$HOME/LLM/Modèles/gemma-3-1b-it-Q4_K_M.gguf"
+    MODEL_PATH="$HOME/LLM/gemma-3-1b-it-Q4_K_M.gguf"
     MODEL_NAME="Gemma 3 1B"
 elif [ "$CHOIX" == "L" ]; then
-    MODEL_PATH="$HOME/LLM/Modèles/Llama-3.2-3B-Instruct-Q4_K_M.gguf"
+    MODEL_PATH="$HOME/LLM/Llama-3.2-3B-Instruct-Q4_K_M.gguf"
     MODEL_NAME="Llama 3.2 3B"
 else
-    MODEL_PATH="$HOME/LLM/Modèles/Qwen2.5-Coder-3B-Instruct-abliterated-Q4_K_M.gguf"
+    MODEL_PATH="$HOME/LLM/Qwen2.5-Coder-3B-Instruct-abliterated-Q4_K_M.gguf"
     MODEL_NAME="Qwen 2.5 Coder 3B"
 fi
 
